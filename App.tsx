@@ -1,15 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { HashRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { getUserStats } from './utils/storage';
 import Navbar from './components/Navbar';
-import HomePage from './pages/Home';
-import ChallengesPage from './pages/Challenges';
-import ChallengeDetailPage from './pages/ChallengeDetail';
-import AdminPage from './pages/Admin';
-import AuthPage from './pages/Auth';
-import FilesPage from './pages/Files';
-import NotFound from './pages/NotFound';
 import { User, Challenge, Stats } from './types';
 import { ShieldAlert, Wifi, Activity, Cpu } from 'lucide-react';
 import Button from './components/ui/Button';
@@ -24,6 +17,16 @@ import OnlineUsers from './components/OnlineUsers';
 import { unsubscribeAll } from './services/realtime';
 import ErrorBoundary from './components/ErrorBoundary';
 import WelcomeScreen from './components/WelcomeScreen';
+import LoadingSpinner from './components/ui/LoadingSpinner';
+
+// Fix 3: Code Splitting — pages now load on-demand, not all at once
+const HomePage = lazy(() => import('./pages/Home'));
+const ChallengesPage = lazy(() => import('./pages/Challenges'));
+const ChallengeDetailPage = lazy(() => import('./pages/ChallengeDetail'));
+const AdminPage = lazy(() => import('./pages/Admin'));
+const AuthPage = lazy(() => import('./pages/Auth'));
+const FilesPage = lazy(() => import('./pages/Files'));
+const NotFound = lazy(() => import('./pages/NotFound'));
 
 function AppContent() {
   const navigate = useNavigate();
@@ -62,7 +65,6 @@ function AppContent() {
     }
     setIsLoading(false);
 
-    // Cleanup realtime subscriptions on unmount
     return () => {
       unsubscribeAll();
     };
@@ -81,12 +83,9 @@ function AppContent() {
   const handleLogin = async (user: User) => {
     setCurrentUser(user);
     localStorage.setItem('cyberhack_user', JSON.stringify(user));
-
     const stats = await getUserStats(user.id);
     setUserStats(stats);
-
     addToast('Authentication Successful. Access Granted.', 'success');
-
     if (user.isAdmin) {
       navigate('/admin');
     } else {
@@ -123,23 +122,23 @@ function AppContent() {
     return <BootSequence onComplete={handleBootComplete} isDataReady={!isLoading} />;
   }
 
-  // Show welcome screen after boot sequence
   if (showWelcome) {
     return <WelcomeScreen onClose={() => setShowWelcome(false)} />;
   }
 
+  // Fix 2: Removed filter: blur() — it forced full GPU repaint every frame.
+  // Simple opacity + y shift uses only the compositor (no repaint, no layout).
   const pageVariants = {
-    initial: { opacity: 0, filter: 'blur(10px)', scale: 0.98 },
-    animate: { opacity: 1, filter: 'blur(0px)', scale: 1 },
-    exit: { opacity: 0, filter: 'blur(10px)', scale: 1.02 }
+    initial: { opacity: 0, y: 8 },
+    animate: { opacity: 1, y: 0 },
+    exit: { opacity: 0, y: -6 },
   };
-  const pageTransition = { duration: 0.4, ease: [0.43, 0.13, 0.23, 0.96] as [number, number, number, number] };
+  const pageTransition = { duration: 0.25, ease: 'easeOut' as const };
 
   const currentPath = location.pathname;
   const isAuthPage = currentPath === '/login' || currentPath === '/signup';
 
   return (
-
     <div className="relative min-h-screen text-slate-100 flex flex-col overflow-x-hidden selection:bg-cyan-500/30 selection:text-cyan-100">
 
       <div className="scanlines"></div>
@@ -181,95 +180,91 @@ function AppContent() {
       )}
 
       <main className="flex-grow pt-24 px-6 pb-20 w-full z-10">
-        <Routes>
-          <Route path="/" element={
-            <motion.div key="home" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={pageTransition}>
-              <HomePage onNavigate={navigateTo} />
-            </motion.div>
-          } />
-
-          <Route path="/login" element={
-            <motion.div key="login" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={pageTransition}>
-              <AuthPage
-                mode="login"
-                onLogin={handleLogin}
-                onNavigate={navigateTo}
-              />
-            </motion.div>
-          } />
-
-          <Route path="/signup" element={
-            <motion.div key="signup" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={pageTransition}>
-              <AuthPage
-                mode="signup"
-                onLogin={handleLogin}
-                onNavigate={navigateTo}
-              />
-            </motion.div>
-          } />
-
-          <Route path="/challenges" element={
-            <motion.div key="challenges" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={pageTransition}>
-              <ChallengesPage
-                currentUser={currentUser}
-                onSelectCase={handleSelectCase}
-                onNavigate={navigateTo}
-              />
-            </motion.div>
-          } />
-
-          <Route path="/challenge/:id" element={
-            selectedCase ? (
-              <motion.div key="challenge-detail" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={pageTransition}>
-                <ChallengeDetailPage
-                  challenge={selectedCase}
-                  currentUser={currentUser}
-                  onBack={() => navigate('/challenges')}
-                  onUpdateStats={(newStats) => setUserStats(newStats)}
-                  onSelectChallenge={handleSelectCase}
-                />
+        {/* Fix 3: Suspense wraps lazy-loaded pages */}
+        <Suspense fallback={
+          <div className="flex items-center justify-center h-[60vh]">
+            <LoadingSpinner size="lg" />
+          </div>
+        }>
+          <Routes>
+            <Route path="/" element={
+              <motion.div key="home" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={pageTransition}>
+                <HomePage onNavigate={navigateTo} />
               </motion.div>
-            ) : (
-              <Navigate to="/challenges" replace />
-            )
-          } />
+            } />
 
-          <Route path="/admin" element={
-            currentUser?.isAdmin ? (
-              <motion.div key="admin" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={pageTransition}>
-                <AdminPage currentUser={currentUser} onNavigate={navigateTo} />
+            <Route path="/login" element={
+              <motion.div key="login" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={pageTransition}>
+                <AuthPage mode="login" onLogin={handleLogin} onNavigate={navigateTo} />
               </motion.div>
-            ) : (
-              <motion.div key="access-denied" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={pageTransition} className="flex flex-col items-center justify-center py-20 text-center h-[60vh]">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-red-500 blur-xl opacity-20 animate-pulse"></div>
-                  <ShieldAlert className="w-24 h-24 text-red-500 mb-6 relative z-10" />
-                </div>
-                <h2 className="text-5xl font-black text-white mb-4 tracking-tighter">RESTRICTED AREA</h2>
-                <p className="text-slate-400 mb-8 max-w-md text-lg border-l-2 border-red-500 pl-4">
-                  Security Clearance Level 5 Required.<br />
-                  This incident has been logged.
-                </p>
-                <Button variant="danger" onClick={() => navigate('/challenges')}>Return to Safety</Button>
+            } />
+
+            <Route path="/signup" element={
+              <motion.div key="signup" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={pageTransition}>
+                <AuthPage mode="signup" onLogin={handleLogin} onNavigate={navigateTo} />
               </motion.div>
-            )
-          } />
+            } />
 
-          <Route path="/files" element={
-            <motion.div key="files" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={pageTransition}>
-              <FilesPage currentUser={currentUser} onNavigate={navigateTo} />
-            </motion.div>
-          } />
+            <Route path="/challenges" element={
+              <motion.div key="challenges" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={pageTransition}>
+                <ChallengesPage currentUser={currentUser} onSelectCase={handleSelectCase} onNavigate={navigateTo} />
+              </motion.div>
+            } />
 
-          <Route path="*" element={
-            <motion.div key="404" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={pageTransition}>
-              <NotFound onNavigate={navigateTo} />
-            </motion.div>
-          } />
-        </Routes>
+            <Route path="/challenge/:id" element={
+              selectedCase ? (
+                <motion.div key="challenge-detail" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={pageTransition}>
+                  <ChallengeDetailPage
+                    challenge={selectedCase}
+                    currentUser={currentUser}
+                    onBack={() => navigate('/challenges')}
+                    onUpdateStats={(newStats) => setUserStats(newStats)}
+                    onSelectChallenge={handleSelectCase}
+                  />
+                </motion.div>
+              ) : (
+                <Navigate to="/challenges" replace />
+              )
+            } />
+
+            <Route path="/admin" element={
+              currentUser?.isAdmin ? (
+                <motion.div key="admin" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={pageTransition}>
+                  <AdminPage currentUser={currentUser} onNavigate={navigateTo} />
+                </motion.div>
+              ) : (
+                <motion.div key="access-denied" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={pageTransition} className="flex flex-col items-center justify-center py-20 text-center h-[60vh]">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-red-500 blur-xl opacity-20 animate-pulse"></div>
+                    <ShieldAlert className="w-24 h-24 text-red-500 mb-6 relative z-10" />
+                  </div>
+                  <h2 className="text-5xl font-black text-white mb-4 tracking-tighter">RESTRICTED AREA</h2>
+                  <p className="text-slate-400 mb-8 max-w-md text-lg border-l-2 border-red-500 pl-4">
+                    Security Clearance Level 5 Required.<br />
+                    This incident has been logged.
+                  </p>
+                  <Button variant="danger" onClick={() => navigate('/challenges')}>Return to Safety</Button>
+                </motion.div>
+              )
+            } />
+
+            <Route path="/files" element={
+              <motion.div key="files" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={pageTransition}>
+                <FilesPage currentUser={currentUser} onNavigate={navigateTo} />
+              </motion.div>
+            } />
+
+            <Route path="*" element={
+              <motion.div key="404" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={pageTransition}>
+                <NotFound onNavigate={navigateTo} />
+              </motion.div>
+            } />
+          </Routes>
+        </Suspense>
       </main>
 
       {/* LIVE TELEMETRY FOOTER */}
+      {/* Fix 5: Replaced Framer Motion infinite loop with CSS animation (see enhanced-styles.css .server-load-bar) */}
       <footer className="fixed bottom-0 left-0 right-0 h-8 bg-slate-950/90 border-t border-slate-800 backdrop-blur-sm z-50 flex items-center justify-between px-4 text-[10px] font-mono text-slate-500 select-none">
         <div className="flex items-center space-x-6">
           <div className="flex items-center">
@@ -291,11 +286,8 @@ function AppContent() {
             <Activity className="w-3 h-3 text-yellow-500 animate-pulse" />
             <span>SERVER_LOAD</span>
             <div className="w-16 h-1.5 bg-slate-800 rounded-full overflow-hidden">
-              <motion.div
-                animate={{ width: ["30%", "45%", "60%", "40%"] }}
-                transition={{ repeat: Infinity, duration: 3 }}
-                className="h-full bg-yellow-500"
-              />
+              {/* CSS animation instead of Framer Motion infinite loop */}
+              <div className="server-load-bar h-full bg-yellow-500 rounded-full" />
             </div>
           </div>
           <div className="hidden sm:flex items-center">
