@@ -1,0 +1,76 @@
+GET / HTTP/1.1
+Host: cyberhack.net
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Connection: keep-alive
+
+HTTP/1.1 200 OK
+Server: nginx/1.24.0
+Date: Wed, 25 Feb 2026 12:01:00 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 12543
+Connection: keep-alive
+X-Powered-By: Express
+
+GET /assets/style.css HTTP/1.1
+Host: cyberhack.net
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept: text/css,*/*;q=0.1
+Connection: keep-alive
+Referer: http://cyberhack.net/
+
+HTTP/1.1 200 OK
+Server: nginx/1.24.0
+Date: Wed, 25 Feb 2026 12:01:01 GMT
+Content-Type: text/css
+Content-Length: 4321
+Cache-Control: public, max-age=31536000
+Connection: keep-alive
+
+GET /api/v1/status HTTP/1.1
+Host: cyberhack.net
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept: application/json
+Authorization: Bearer null
+Connection: keep-alive
+
+HTTP/1.1 200 OK
+Server: nginx/1.24.0
+Date: Wed, 25 Feb 2026 12:01:02 GMT
+Content-Type: application/json
+Connection: keep-alive
+X-Backend-Server: web-node-04
+X-Rate-Limit: 100/min
+X-Flag-Header: flag{w3b_r3c0n_succ3ss}
+X-Response-Time: 42ms
+Access-Control-Allow-Origin: *
+
+GET /assets/main.js HTTP/1.1
+Host: cyberhack.net
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept: application/javascript,*/*;q=0.1
+Connection: keep-alive
+Referer: http://cyberhack.net/
+
+HTTP/1.1 200 OK
+Server: nginx/1.24.0
+Date: Wed, 25 Feb 2026 12:01:02 GMT
+Content-Type: application/javascript
+Content-Length: 89345
+Cache-Control: public, max-age=31536000
+Connection: keep-alive
+
+GET /images/logo.png HTTP/1.1
+Host: cyberhack.net
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+Accept: image/webp,*/*
+Connection: keep-alive
+Referer: http://cyberhack.net/
+
+HTTP/1.1 200 OK
+Server: nginx/1.24.0
+Date: Wed, 25 Feb 2026 12:01:03 GMT
+Content-Type: image/png
+Content-Length: 14502
+Connection: keep-alive

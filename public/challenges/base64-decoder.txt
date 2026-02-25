@@ -1,0 +1,4 @@
+Retrieve the flag from this encoded string:
+ZmxhZ3tiYXNlNjRfaXNfZWFzeX0=
+you can use https://www.base64decode.org/ to decode the flag
+

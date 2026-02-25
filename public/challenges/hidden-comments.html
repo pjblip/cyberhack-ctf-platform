@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Corp Intranet</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0f172a;
+            color: #cbd5e1;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: #1e293b;
+            padding: 1rem 2rem;
+            border-bottom: 2px solid #3b82f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #60a5fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .card {
+            background: #1e293b;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #f8fafc;
+            margin-top: 0;
+        }
+
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #2563eb;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #64748b;
+            font-size: 0.875rem;
+            border-top: 1px solid #334155;
+            margin-top: 3rem;
+        }
+
+        /* TODO: remove debug red border */
+        /* div { border: 1px solid red; } */
+    </style>
+</head>
+
+<body>
+    <!-- Main Header Section -->
+    <header>
+        <div class="logo">SecureCorp Intranet Portal</div>
+        <nav>
+            <button onclick="alert('Access Denied: Admin Privileges Required')">Admin Panel</button>
+            <button>Employee Directory</button>
+            <button>Logout</button>
+        </nav>
+    </header>
+
+    <div class="container">
+        <!-- Dashboard Welcome -->
+        <div class="card">
+            <h2>Welcome Back, Employee #4892</h2>
+            <p>Please review the latest security bulletins before proceeding to your workstation.</p>
+            <!-- 
+                Review 2026 quarter 1 priorities:
+                1. Update all legacy systems.
+                2. Deprecate the old v1 API endpoint.
+                3. Ensure all hardcoded credentials are removed from frontend code.
+            -->
+        </div>
+
+        <!-- News Feed -->
+        <div class="card">
+            <h3>Company Announcements</h3>
+            <ul>
+                <li><strong>System Maintenance:</strong> Friday at 02:00 AM UTC. Expect 15 minutes of downtime.</li>
+                <li><strong>Password Policy:</strong> All passwords must now be 16 characters minimum.</li>
+                <li><strong>New Hire:</strong> Welcome Sarah to the cybersecurity team!</li>
+            </ul>
+        </div>
+
+        <!-- Department Links -->
+        <div class="card">
+            <h3>Quick Links</h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem;">
+                <div style="background: #334155; padding: 1rem; border-radius: 4px;">HR Portal</div>
+                <div style="background: #334155; padding: 1rem; border-radius: 4px;">IT Support Ticketing</div>
+                <div style="background: #334155; padding: 1rem; border-radius: 4px;">Payroll Systems</div>
+                <!-- Dev note: hide the legacy payroll link until migration is complete -->
+                <!-- <div style="background: #334155; padding: 1rem; border-radius: 4px;">Legacy Payroll (v0.9)</div> -->
+            </div>
+        </div>
+
+        <!-- System Status block -->
+        <div class="card">
+            <h3>Server Status</h3>
+            <p>All primary systems are operating within normal parameters.</p>
+            <!--
+            =============================================================
+            DEVELOPER COMMS LOG - DO NOT DEPLOY TO PRODUCTION
+            -------------------------------------------------------------
+            Dave: Hey, did you disable the old admin bypass?
+            Alice: Yes, the /admin endpoint is now requiring the JWT token.
+            Dave: What about the backup override flag? I left it in the DOM for testing.
+            Alice: I removed it. No one should be able to see flag{h1dd3n_c0mm3nts_s33n} anymore.
+            Dave: Ok, perfectly secure.
+            =============================================================
+            -->
+            <p>Last checked: 2 minutes ago</p>
+        </div>
+    </div>
+
+    <!-- Footer Information -->
+    <div class="footer">
+        <p>&copy; 2026 SecureCorp Industries. All rights reserved.</p>
+        <p>Unauthorised access to this system is strictly prohibited and monitored.</p>
+        <!-- Site optimized by Webpack v5.x -->
+    </div>
+
+    <script>
+        // Initialize dashboard counters
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('Intranet initialized v2.4.1');
+            // Fetch notifications
+            // fetch('/api/notifications').then...
+        });
+
+        function checkStatus() {
+            // Heartbeat check
+            return true;
+        }
+    </script>
+</body>
+
+</html>

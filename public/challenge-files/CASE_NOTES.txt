@@ -1,0 +1,91 @@
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CASE FILE #CF-2024-089
+MISSING PERSON INVESTIGATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+SUBJECT: Riya Sharma
+AGE: 20 years old
+STUDENT ID: GU-CS-2024-1847
+COURSE: B.Tech Computer Science, 3rd Year
+LAST SEEN: February 9, 2026, 6:45 PM
+LOCATION: Near University Gate 4
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+EVIDENCE LOG
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+ITEM #1: Mobile Phone (Samsung Galaxy S23)
+- Found: Near Gate 4, University Campus
+- Condition: Screen cracked, battery at 12%
+- Status: Extracted backup successfully
+
+ITEM #2: Backpack
+- Contents: Laptop (locked), notebooks, water bottle
+- Location: Same as phone
+
+ITEM #3: Student ID Card
+- Found: Inside backpack front pocket
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TIMELINE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+6:00 PM - Riya attended evening lab session (confirmed by attendance)
+6:30 PM - Last seen leaving Computer Science building
+6:45 PM - CCTV shows her near Gate 4 (last known sighting)
+7:15 PM - Roommate reports her missing after she didn't return
+8:00 PM - Campus security begins search
+9:30 PM - Phone and backpack discovered
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+PHONE ANALYSIS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Last Call: 6:42 PM to "Mom" (duration: 2 min 34 sec)
+Last Message: 6:44 PM to friend "Priya"
+  Content: "Heading home now. See you tomorrow!"
+
+Last App Used: Notes app (6:43 PM)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+CRITICAL DISCOVERY
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+A note was found in her phone's Notes app, created at 6:43 PM.
+The note appears to be encoded using a simple cipher.
+
+ENCODED NOTE:
+synt{t00q_s0er3af1p5_w0o}
+
+ANALYSIS:
+- Created just 2 minutes before she went missing
+- Cipher appears to be a substitution cipher
+- Possibly ROT13 (common Caesar cipher variant)
+- May contain critical information about her whereabouts
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+INVESTIGATOR NOTES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+The encoded message may be the key to finding Riya.
+As the forensic investigator, your job is to:
+
+1. Decode the message using ROT13 cipher
+2. Submit the decoded flag to complete the investigation
+
+Tools you can use:
+- Online ROT13 decoder: https://rot13.com/
+- CyberChef: https://gchq.github.io/CyberChef/
+- Python: codecs.decode(text, 'rot13')
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STATUS: INVESTIGATION ONGOING
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Lead Investigator: Det. Arjun Mehta
+Case Status: ACTIVE - HIGH PRIORITY
+Next Steps: Decode the message and report findings
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+END OF CASE FILE

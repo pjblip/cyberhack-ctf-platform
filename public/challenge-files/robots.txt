@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /private/
+Disallow: /admin-panel/
+
+# The flag is hidden in the directory name below:
+# flag{disallow_admin_panel}

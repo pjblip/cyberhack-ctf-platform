@@ -1,0 +1,82 @@
+# SecureCorp Main Robots Exclusion Protocol
+# Updated: 2026-02-25
+
+# Allow open indexing for main areas
+User-agent: *
+Allow: /public/
+Allow: /assets/
+Allow: /images/
+Allow: /blog/
+Allow: /articles/
+Disallow: /admin/
+Disallow: /wp-admin/
+Disallow: /login/
+Disallow: /register/
+Disallow: /api/
+Disallow: /config/
+Disallow: /cgi-bin/
+Disallow: /tmp/
+Disallow: /cache/
+
+# Specific rules for Google
+User-agent: Googlebot
+Allow: /
+Disallow: /search/
+Disallow: /private/
+Disallow: /users/
+Disallow: /orders/
+Disallow: /checkout/
+Crawl-delay: 1
+
+# Specific rules for Bing
+User-agent: Bingbot
+Allow: /
+Disallow: /search/
+Disallow: /private/
+Disallow: /users/
+Crawl-delay: 2
+
+# Bad bots to completely block
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: Rogerbot
+Disallow: /
+
+# Internal testing agent rules
+User-agent: SecureCorp-InternalMonitor
+Disallow: /production_db_backup/
+Disallow: /server_logs/
+Disallow: /flag{r0b0ts_txt_r34d}
+Disallow: /test_environment/
+Disallow: /debug_endpoints/
+Allow: /status/health
+
+# Slow down Yandex
+User-agent: YandexBot
+Crawl-delay: 10
+Disallow: /admin/
+Disallow: /search/
+
+# Block Baidu
+User-agent: Baiduspider
+Disallow: /
+
+# Prevent indexing of PDF and Word docs globally
+User-agent: *
+Disallow: /*.pdf$
+Disallow: /*.doc$
+Disallow: /*.docx$
+Disallow: /*.xls$
+
+Sitemap: https://cyberhack.net/sitemap.xml
+Sitemap: https://cyberhack.net/blog-sitemap.xml
