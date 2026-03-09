@@ -40,6 +40,11 @@ supabase/.temp
 supabase_windows_amd64/
 supabase.exe
 
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
 # Temporary files
 *.tmp
 *.bak

@@ -1,4 +1,4 @@
-import { useEffect, useState, memo } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { db } from '../services/db';
 
@@ -80,5 +80,4 @@ const ActivityFeed: React.FC = () => {
   );
 };
 
-// Fix 7: memo prevents re-render when parent App state changes
-export default memo(ActivityFeed);
+export default ActivityFeed;

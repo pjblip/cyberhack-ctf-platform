@@ -1,4 +1,4 @@
-import { useEffect, useState, memo } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Trophy, TrendingUp, TrendingDown, Minus, Crown, Medal, Award } from 'lucide-react';
 import { subscribeLeaderboard, LeaderboardUpdate } from '../services/realtime';
@@ -183,5 +183,4 @@ const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({ initialData, 
   );
 };
 
-// Fix 7: memo prevents re-render when parent App state changes (profile open, toasts, etc.)
-export default memo(RealtimeLeaderboard);
+export default RealtimeLeaderboard;
