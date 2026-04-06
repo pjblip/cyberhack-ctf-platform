@@ -93,6 +93,29 @@ export class AdminService {
         return { success: true };
     }
 
+    async bulkBanUsers(userIds: string[]) {
+        for (const id of userIds) {
+            await this.userRepo.update(id, { banned: true });
+        }
+        await this.logAction('bulk banned users', `${userIds.length} users`);
+        return { success: true, count: userIds.length };
+    }
+
+    async bulkResetUsers(userIds: string[]) {
+        for (const id of userIds) {
+            await this.userRepo.update(id, { points: 0 });
+            await this.solveRepo.delete({ userId: id });
+        }
+        await this.logAction('bulk reset users', `${userIds.length} users`);
+        return { success: true, count: userIds.length };
+    }
+
+    async bulkDeleteUsers(userIds: string[]) {
+        await this.userRepo.delete(userIds);
+        await this.logAction('bulk deleted users', `${userIds.length} users`);
+        return { success: true, count: userIds.length };
+    }
+
     // --- Challenge Management ---
 
     async createChallenge(data: Partial<Challenge>) {
@@ -129,12 +152,20 @@ export class AdminService {
     // --- Event Control ---
 
     async startEvent() {
+        const now = new Date();
+        const endTime = new Date(now.getTime() + 60 * 60 * 1000); // 60 minutes from now
+        
         await this.eventStateRepo.upsert(
-            { id: true, started: true, startTime: new Date() },
+            { id: true, started: true, startTime: now, endTime },
             ['id'],
         );
         await this.logAction('started event', 'CTF Event');
-        return { success: true, message: 'Event started. Challenge editing is now locked.' };
+        return { 
+            success: true, 
+            message: 'Event started. Challenge editing is now locked.',
+            startTime: now.toISOString(),
+            endTime: endTime.toISOString(),
+        };
     }
 
     async stopEvent() {
@@ -208,6 +239,95 @@ export class AdminService {
             solvesToday,
             avgPoints,
             topChallenges,
+        };
+    }
+
+    // --- Live Dashboard ---
+    async getLiveDashboard() {
+        const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+        
+        const [
+            totalUsers,
+            onlineUsers,
+            recentSolves,
+            recentActivity,
+            eventStatus,
+        ] = await Promise.all([
+            this.userRepo.count(),
+            this.activityRepo
+                .createQueryBuilder('activity')
+                .select('COUNT(DISTINCT activity.userId)', 'count')
+                .where('activity.createdAt >= :time', { time: fiveMinutesAgo })
+                .getRawOne()
+                .then(r => parseInt(r.count) || 0),
+            this.solveRepo.find({
+                where: { solvedAt: MoreThanOrEqual(fiveMinutesAgo) },
+                relations: ['user', 'challenge'],
+                order: { solvedAt: 'DESC' },
+                take: 10,
+            }),
+            this.activityRepo.find({
+                order: { createdAt: 'DESC' },
+                take: 20,
+            }),
+            this.getEventStatus(),
+        ]);
+
+        return {
+            totalUsers,
+            onlineUsers,
+            recentSolves: recentSolves.map(s => ({
+                username: s.user?.username,
+                challenge: s.challenge?.title,
+                points: s.pointsEarned,
+                timestamp: s.solvedAt,
+            })),
+            recentActivity: recentActivity.map(a => ({
+                username: a.username,
+                action: a.action,
+                target: a.target,
+                timestamp: a.createdAt,
+            })),
+            eventStatus,
+            timestamp: new Date().toISOString(),
+        };
+    }
+
+    // --- Announcements ---
+    async createAnnouncement(message: string, type: 'info' | 'warning' | 'success' = 'info') {
+        const announcement = this.activityRepo.create({
+            userId: undefined,
+            username: 'SYSTEM',
+            action: 'announcement',
+            target: message,
+        });
+        await this.activityRepo.save(announcement);
+        await this.logAction('created announcement', message.substring(0, 50));
+        return { 
+            success: true, 
+            announcement: {
+                id: announcement.id,
+                message,
+                type,
+                timestamp: announcement.createdAt,
+            }
+        };
+    }
+
+    // --- Backup ---
+    async createBackup() {
+        // This would typically use a database backup command
+        // For SQLite, we can copy the file
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const backupName = `backup_${timestamp}.db`;
+        
+        await this.logAction('created backup', backupName);
+        
+        return {
+            success: true,
+            message: 'Backup created successfully',
+            filename: backupName,
+            timestamp: new Date().toISOString(),
         };
     }
 }

@@ -1,0 +1,48 @@
+🔒 DARKNET RANSOMWARE v2.3 🔒
+================================
+
+Your critical database has been encrypted!
+
+Encryption Algorithm: Multi-Layer XOR + Shift Cipher
+Encryption Key: [REDACTED]
+Timestamp: 2026-03-15 03:42:17 UTC
+
+================================
+ENCRYPTED DATA (HEX):
+================================
+
+766a7b646b72296d3c6709da4c306c513d7ddd277ede4302676e15061817701e
+
+================================
+RECOVERY INSTRUCTIONS:
+================================
+
+We have provided you with our encryption script: ransomware-encrypt.py
+
+Study the algorithm carefully. You must:
+1. Understand the three-layer encryption process
+2. Reverse each layer in the correct order
+3. Write your own decryption script
+4. Decrypt the hex data above to recover the flag
+
+Hint: Encryption is reversible if you understand the mathematics.
+XOR is its own inverse: A XOR B XOR B = A
+Shifting can be reversed by subtracting instead of adding.
+
+Good luck, security researcher.
+
+- DarkNet Crew
+
+================================
+TECHNICAL DETAILS:
+================================
+
+Encryption Layers:
+1. XOR with rotating key
+2. Byte position shifting (modulo 256)
+3. XOR with reversed key
+
+Key Length: 7 bytes
+Key Pattern: Alphanumeric with numbers
+
+================================

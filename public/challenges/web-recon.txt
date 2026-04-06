@@ -42,7 +42,7 @@ Content-Type: application/json
 Connection: keep-alive
 X-Backend-Server: web-node-04
 X-Rate-Limit: 100/min
-X-Flag-Header: flag{w3b_r3c0n_succ3ss}
+X-Custom-Auth-Token: %66%6c%61%67%7bw3b_r3c0n_succ3ss%7d
 X-Response-Time: 42ms
 Access-Control-Allow-Origin: *
 

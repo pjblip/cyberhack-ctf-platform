@@ -41,6 +41,21 @@ export class AdminController {
         return this.adminService.banUser(id);
     }
 
+    @Post('users/bulk/ban')
+    async bulkBanUsers(@Body() body: { userIds: string[] }) {
+        return this.adminService.bulkBanUsers(body.userIds);
+    }
+
+    @Post('users/bulk/reset')
+    async bulkResetUsers(@Body() body: { userIds: string[] }) {
+        return this.adminService.bulkResetUsers(body.userIds);
+    }
+
+    @Post('users/bulk/delete')
+    async bulkDeleteUsers(@Body() body: { userIds: string[] }) {
+        return this.adminService.bulkDeleteUsers(body.userIds);
+    }
+
     // --- Challenge Management (locked during event) ---
 
     @Post('challenges')
@@ -89,5 +104,26 @@ export class AdminController {
     @Get('analytics')
     async getAnalytics() {
         return this.adminService.getAnalytics();
+    }
+
+    // --- Live Dashboard ---
+
+    @Get('dashboard/live')
+    async getLiveDashboard() {
+        return this.adminService.getLiveDashboard();
+    }
+
+    // --- Announcements ---
+
+    @Post('announcements')
+    async createAnnouncement(@Body() body: { message: string; type?: 'info' | 'warning' | 'success' }) {
+        return this.adminService.createAnnouncement(body.message, body.type);
+    }
+
+    // --- Backup ---
+
+    @Post('backup')
+    async createBackup() {
+        return this.adminService.createBackup();
     }
 }

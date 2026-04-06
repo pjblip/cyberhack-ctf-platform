@@ -1,5 +1,7 @@
 // API client for NestJS backend
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+// If VITE_API_URL is missing, default to the local backend port using the exact hostname the user typed in
+const fallbackBase = typeof window !== 'undefined' ? `http://${window.location.hostname}:3001` : 'http://localhost:3001';
+const API_BASE = import.meta.env.VITE_API_URL || fallbackBase;
 
 function getToken(): string | null {
     return localStorage.getItem('auth_token');

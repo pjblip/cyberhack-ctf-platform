@@ -133,9 +133,10 @@
             -------------------------------------------------------------
             Dave: Hey, did you disable the old admin bypass?
             Alice: Yes, the /admin endpoint is now requiring the JWT token.
-            Dave: What about the backup override flag? I left it in the DOM for testing.
-            Alice: I removed it. No one should be able to see flag{h1dd3n_c0mm3nts_s33n} anymore.
-            Dave: Ok, perfectly secure.
+            Dave: What about the backup override token? I left it in the DOM for testing.
+            Alice: I removed it. No one should be able to see it anymore.
+            Dave: Make sure the token is HTML encoded if you ever add it back!
+            <!-- &#102;&#108;&#97;&#103;&#123;&#104;&#49;&#100;&#100;&#51;&#110;&#95;&#99;&#48;&#109;&#109;&#51;&#110;&#116;&#115;&#95;&#115;&#51;&#51;&#110;&#125; -->
             =============================================================
             -->
             <p>Last checked: 2 minutes ago</p>

@@ -13,8 +13,8 @@ export const getSolvedCases = async (userId: string): Promise<string[]> => {
 };
 
 export const saveSolvedCase = async (userId: string, caseId: string) => {
-   // Handled by backend in submitFlag
-   // We can optimistically update local storage if needed, but for now we rely on fetch
+    // Handled by backend in submitFlag
+    // We can optimistically update local storage if needed, but for now we rely on fetch
 };
 
 export const getUserStats = async (userId: string): Promise<Stats> => {
@@ -28,7 +28,11 @@ export const saveStats = async (userId: string, stats: Stats) => {
 };
 
 export const getChallengeSolveCounts = async (): Promise<Record<string, number>> => {
-    return {}; // Not implemented in Sheets yet to save bandwidth
+    try {
+        return await db.challenges.getSolveCounts();
+    } catch {
+        return {};
+    }
 };
 
 // HINTS (Local Storage Only for now to save Sheet Calls)

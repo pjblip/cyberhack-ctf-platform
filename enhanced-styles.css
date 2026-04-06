@@ -5,6 +5,30 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Ensure the whole page scrolls smoothly with momentum on touch devices */
+body {
+  touch-action: pan-y;
+}
+
+/* Isolate layout of major page sections to prevent reflow cascades during scroll */
+main,
+section,
+article,
+.page-section {
+  contain: layout style;
+}
+
+/* GPU-promote card transitions — prevents jank on complex hover effects */
+.card-hover,
+[class*="rounded-xl"],
+[class*="rounded-2xl"] {
+  will-change: auto;
+  /* browser selects; promote only on hover */
+  transform: translate3d(0, 0, 0);
+  backface-visibility: hidden;
+}
+
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   width: 10px;

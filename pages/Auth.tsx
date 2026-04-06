@@ -196,7 +196,7 @@ const AuthPage: React.FC<AuthPageProps> = ({ mode, onLogin, onNavigate }) => {
                             <p className="text-slate-400 text-sm">
                                 {mode === 'login' ? "No clearance?" : "Already verified?"}
                                 <button
-                                    onClick={() => onNavigate(mode === 'login' ? 'signup' : 'login')}
+                                    onClick={() => onNavigate(mode === 'login' ? '/signup' : '/login')}
                                     className="ml-2 text-cyan-400 hover:text-cyan-300 font-bold hover:underline"
                                 >
                                     {mode === 'login' ? "Request Access" : "Login"}

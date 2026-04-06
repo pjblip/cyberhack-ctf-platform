@@ -56,7 +56,7 @@ Disallow: /
 User-agent: SecureCorp-InternalMonitor
 Disallow: /production_db_backup/
 Disallow: /server_logs/
-Disallow: /flag{r0b0ts_txt_r34d}
+Disallow: /%66%6c%61%67%7br0b0ts_txt_r34d%7d
 Disallow: /test_environment/
 Disallow: /debug_endpoints/
 Allow: /status/health

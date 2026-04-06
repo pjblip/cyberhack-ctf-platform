@@ -29,14 +29,16 @@ export class LeaderboardService {
                 u.id, 
                 u.username, 
                 t.name as team_name,
-                COALESCE(SUM(s.points_earned), 0) as total_points,
+                COALESCE(SUM(s.points_earned), 0) as points,
+                COUNT(s.id) as correct,
+                COUNT(s.id) as solves,
                 MAX(s.solved_at) as last_solve
             FROM users u
             LEFT JOIN solves s ON u.id = s.user_id
             LEFT JOIN teams t ON u.team_id = t.id
             WHERE u.is_admin = false AND u.banned = false
             GROUP BY u.id, u.username, t.name
-            ORDER BY total_points DESC, last_solve ASC NULLS FIRST
+            ORDER BY points DESC, last_solve ASC NULLS FIRST
             LIMIT 100
         `;
 
@@ -63,13 +65,15 @@ export class LeaderboardService {
             SELECT 
                 t.id, 
                 t.name, 
-                COALESCE(SUM(s.points_earned), 0) as total_points,
+                COALESCE(SUM(s.points_earned), 0) as points,
+                COUNT(s.id) as correct,
+                COUNT(s.id) as solves,
                 MAX(s.solved_at) as last_solve
             FROM teams t
             LEFT JOIN users u ON t.id = u.team_id
             LEFT JOIN solves s ON u.id = s.user_id
             GROUP BY t.id, t.name
-            ORDER BY total_points DESC, last_solve ASC NULLS FIRST
+            ORDER BY points DESC, last_solve ASC NULLS FIRST
             LIMIT 50
         `;
 

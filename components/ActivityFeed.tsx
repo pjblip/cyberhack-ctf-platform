@@ -23,7 +23,8 @@ const ActivityFeed: React.FC = () => {
         ...item,
         type: 'medium' // Default color
       }));
-      setActivities(formatted);
+      // Show only 10 most recent activities for clean UI
+      setActivities(formatted.slice(0, 10));
     }
   };
 
@@ -36,8 +37,8 @@ const ActivityFeed: React.FC = () => {
   }, []);
 
   return (
-    <div className="w-full bg-slate-900/50 border border-slate-800 rounded-xl p-4 overflow-hidden h-full">
-      <div className="flex items-center justify-between mb-4 border-b border-slate-800 pb-2">
+    <div className="w-full bg-slate-900/50 border border-slate-800 rounded-xl p-4 overflow-hidden h-full flex flex-col">
+      <div className="flex items-center justify-between mb-4 border-b border-slate-800 pb-2 flex-shrink-0">
         <div className="flex items-center">
           <div className="relative mr-2">
             <div className={`w-2 h-2 rounded-full ${db.isLive ? 'bg-green-500' : 'bg-yellow-500'} animate-pulse`}></div>
@@ -47,9 +48,12 @@ const ActivityFeed: React.FC = () => {
             {db.isLive ? 'Live Network Traffic' : 'Simulated Traffic'}
           </h3>
         </div>
+        <span className="text-xs text-slate-600 font-mono">
+          {activities.length} {activities.length === 1 ? 'entry' : 'entries'}
+        </span>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-3 overflow-y-auto flex-1 pr-2 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-slate-900">
         <AnimatePresence initial={false}>
           {activities.map((item) => (
             <motion.div

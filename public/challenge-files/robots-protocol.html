@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robots Protocol - Web Recon Challenge</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #22d3ee;
+            padding: 30px;
+            margin: 0;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: rgba(15, 23, 42, 0.95);
+            border: 2px solid #22d3ee;
+            border-radius: 10px;
+            padding: 35px;
+            box-shadow: 0 0 30px rgba(34, 211, 238, 0.3);
+        }
+        h1 {
+            text-align: center;
+            color: #fbbf24;
+            text-shadow: 0 0 10px rgba(251, 191, 36, 0.8);
+            margin-bottom: 5px;
+            font-size: 22px;
+        }
+        .subtitle { text-align: center; color: #64748b; margin-bottom: 25px; font-size: 13px; }
+
+        /* Browser simulation */
+        .browser {
+            background: #1e293b;
+            border-radius: 8px;
+            border: 2px solid #334155;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        .browser-bar {
+            background: #0f172a;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid #334155;
+        }
+        .browser-dots { display: flex; gap: 6px; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .dot-red { background: #ef4444; }
+        .dot-yellow { background: #fbbf24; }
+        .dot-green { background: #10b981; }
+        .url-input {
+            flex: 1;
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 4px;
+            padding: 6px 12px;
+            color: #22d3ee;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .url-input:hover { border-color: #22d3ee; }
+        .go-btn {
+            background: #22d3ee;
+            color: #0f172a;
+            border: none;
+            border-radius: 4px;
+            padding: 6px 14px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+        .go-btn:hover { background: #06b6d4; }
+        .browser-content {
+            padding: 20px;
+            min-height: 120px;
+            color: #10b981;
+            font-size: 13px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+        }
+
+        /* Pages */
+        .page { display: none; }
+        .page.active { display: block; }
+
+        .home-page { color: #e2e8f0; }
+        .home-page h2 { color: #22d3ee; }
+        .home-page p { color: #94a3b8; }
+        .nav-links { display: flex; gap: 15px; flex-wrap: wrap; margin: 15px 0; }
+        .nav-link {
+            color: #22d3ee;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .nav-link:hover { color: #fbbf24; }
+
+        .robots-content { color: #10b981; }
+        .robots-key { color: #22d3ee; }
+        .robots-val-disallow { color: #ef4444; }
+        .robots-val-allow { color: #10b981; }
+        .robots-comment { color: #475569; }
+
+        .admin-page { color: #e2e8f0; }
+        .flag-box {
+            background: #0f172a;
+            border: 2px solid #10b981;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 15px 0;
+            text-align: center;
+        }
+        .flag-text {
+            color: #10b981;
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        .error-page { color: #ef4444; }
+
+        /* Info sections */
+        .info-box {
+            background: #1e293b;
+            border: 2px solid #3b82f6;
+            padding: 15px 20px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+        .info-box h3 { color: #3b82f6; margin: 0 0 10px 0; font-size: 14px; }
+        .info-box ul { color: #94a3b8; margin: 0; padding-left: 20px; font-size: 13px; }
+        .info-box li { margin: 5px 0; }
+
+        .mission-box {
+            background: #1c1917;
+            border: 2px solid #fbbf24;
+            padding: 15px 20px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+        .mission-box h3 { color: #fbbf24; margin: 0 0 10px 0; font-size: 14px; }
+        .mission-box ol { color: #e2e8f0; margin: 0; padding-left: 20px; font-size: 13px; }
+        .mission-box li { margin: 6px 0; }
+        .mission-box code { color: #22d3ee; background: #0f172a; padding: 2px 6px; border-radius: 3px; }
+
+        .footer { text-align: center; margin-top: 25px; color: #475569; font-size: 12px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🤖 ROBOTS PROTOCOL CHALLENGE</h1>
+    <div class="subtitle">Web Reconnaissance — Easy | 10 Points</div>
+
+    <div class="mission-box">
+        <h3>🎯 YOUR MISSION</h3>
+        <ol>
+            <li>Visit the target website's <code>robots.txt</code> file</li>
+            <li>Find which directories are hidden from search engines</li>
+            <li>Navigate to the hidden admin directory in the browser above</li>
+            <li>Retrieve the flag from the hidden page</li>
+        </ol>
+    </div>
+
+    <!-- Simulated Browser -->
+    <div class="browser">
+        <div class="browser-bar">
+            <div class="browser-dots">
+                <div class="dot dot-red"></div>
+                <div class="dot dot-yellow"></div>
+                <div class="dot dot-green"></div>
+            </div>
+            <input class="url-input" id="urlBar" type="text"
+                   value="https://example-company.com/"
+                   onkeydown="if(event.key==='Enter') navigate()"
+                   placeholder="Enter URL...">
+            <button class="go-btn" onclick="navigate()">GO</button>
+        </div>
+
+        <div class="browser-content" id="browserContent">
+            <!-- Home page shown by default -->
+            <div class="page home-page active" id="page-home">
+                <h2>🏢 Example Company</h2>
+                <p>Welcome to our corporate website.</p>
+                <p>Navigate using the URL bar above. Try different paths!</p>
+                <div class="nav-links">
+                    <span class="nav-link" onclick="goTo('/blog/')">📰 /blog/</span>
+                    <span class="nav-link" onclick="goTo('/public/')">📂 /public/</span>
+                    <span class="nav-link" onclick="goTo('/robots.txt')">🤖 /robots.txt</span>
+                </div>
+            </div>
+
+            <div class="page" id="page-robots">
+                <span class="robots-comment"># Robots.txt for example-company.com</span>
+<span class="robots-comment"># Instructs search engine crawlers which paths to skip</span>
+
+<span class="robots-key">User-agent:</span> *
+
+<span class="robots-key">Disallow:</span> <span class="robots-val-disallow">/private/</span>
+<span class="robots-key">Disallow:</span> <span class="robots-val-disallow">/admin-panel/</span>
+<span class="robots-key">Disallow:</span> <span class="robots-val-disallow">/backup/</span>
+<span class="robots-key">Disallow:</span> <span class="robots-val-disallow">/internal/</span>
+
+<span class="robots-key">Allow:</span> <span class="robots-val-allow">/public/</span>
+<span class="robots-key">Allow:</span> <span class="robots-val-allow">/blog/</span>
+            </div>
+
+            <div class="page" id="page-admin">
+                <div class="admin-page">
+                    <p style="color:#fbbf24; font-weight:bold;">⚠️  RESTRICTED AREA — Admin Panel</p>
+                    <p style="color:#94a3b8;">This directory is hidden from search engines via robots.txt.<br>
+                    You found it by reading the robots.txt file — good recon!</p>
+                    <div class="flag-box">
+                        <p style="color:#64748b; font-size:12px; margin:0 0 8px 0;">🏴 FLAG CAPTURED</p>
+                        <div class="flag-text">flag{r0b0ts_txt_r34d}</div>
+                    </div>
+                    <p style="color:#475569; font-size:12px;">
+                        Real-world lesson: robots.txt is public. Never use it to hide sensitive directories —
+                        use proper authentication instead.
+                    </p>
+                </div>
+            </div>
+
+            <div class="page" id="page-public">
+                <p style="color:#10b981;">📂 /public/ — Public files directory</p>
+                <p style="color:#94a3b8;">Nothing interesting here. This directory is allowed in robots.txt.</p>
+            </div>
+
+            <div class="page" id="page-blog">
+                <p style="color:#10b981;">📰 /blog/ — Company Blog</p>
+                <p style="color:#94a3b8;">Latest posts: "Welcome to our new website", "Company news Q1 2026"</p>
+                <p style="color:#475569; font-size:12px;">Nothing useful here. Keep looking.</p>
+            </div>
+
+            <div class="page" id="page-404">
+                <p style="color:#ef4444;">404 — Page Not Found</p>
+                <p style="color:#94a3b8;">That path doesn't exist on this server.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="info-box">
+        <h3>🤖 What is robots.txt?</h3>
+        <ul>
+            <li><strong>Purpose:</strong> Tells search engine crawlers which pages to skip</li>
+            <li><strong>Location:</strong> Always at the root — <code>https://example.com/robots.txt</code></li>
+            <li><strong>Public:</strong> Anyone can read it — it is NOT a security control</li>
+            <li><strong>Recon value:</strong> Reveals hidden directories that developers don't want indexed</li>
+        </ul>
+    </div>
+
+    <div class="info-box">
+        <h3>🛡️ Security Lesson:</h3>
+        <ul>
+            <li>robots.txt only <em>suggests</em> — it does not block access</li>
+            <li>Listing a path in Disallow actually <strong>advertises</strong> it to attackers</li>
+            <li>Always protect sensitive directories with proper authentication</li>
+            <li>Real pentesters always check robots.txt during reconnaissance</li>
+        </ul>
+    </div>
+
+    <div class="footer">
+        <p>━━━━━━━━━━━━━━━━━━━━━━━━━━━━</p>
+        <p>🎓 Gandhinagar University — Tech Xtreme 2026</p>
+        <p>━━━━━━━━━━━━━━━━━━━━━━━━━━━━</p>
+    </div>
+</div>
+
+<script>
+    const routes = {
+        'https://example-company.com/':           'home',
+        'https://example-company.com':            'home',
+        '/':                                       'home',
+        'https://example-company.com/robots.txt': 'robots',
+        '/robots.txt':                             'robots',
+        'robots.txt':                              'robots',
+        'https://example-company.com/admin-panel/': 'admin',
+        '/admin-panel/':                           'admin',
+        '/admin-panel':                            'admin',
+        'https://example-company.com/public/':    'public',
+        '/public/':                                'public',
+        'https://example-company.com/blog/':      'blog',
+        '/blog/':                                  'blog',
+    };
+
+    function showPage(name) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        const target = document.getElementById('page-' + name);
+        if (target) target.classList.add('active');
+        else document.getElementById('page-404').classList.add('active');
+    }
+
+    function navigate() {
+        const url = document.getElementById('urlBar').value.trim().toLowerCase();
+        const page = routes[url] || '404';
+        showPage(page);
+    }
+
+    function goTo(path) {
+        const url = 'https://example-company.com' + path;
+        document.getElementById('urlBar').value = url;
+        const page = routes[url.toLowerCase()] || routes[path.toLowerCase()] || '404';
+        showPage(page);
+    }
+
+    // Show home on load
+    showPage('home');
+</script>
+</body>
+</html>

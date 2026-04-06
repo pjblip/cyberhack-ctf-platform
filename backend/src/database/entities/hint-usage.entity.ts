@@ -22,11 +22,11 @@ export class HintUsage {
     @CreateDateColumn({ name: 'used_at' })
     usedAt: Date;
 
-    @ManyToOne(() => User)
+    @ManyToOne(() => User, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'user_id' })
     user: User;
 
-    @ManyToOne(() => Challenge)
+    @ManyToOne(() => Challenge, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'challenge_id' })
     challenge: Challenge;
 }
