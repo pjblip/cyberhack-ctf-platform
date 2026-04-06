@@ -13,7 +13,7 @@ build/
 .env.production
 backend/.env
 
-# Database
+# Database (SQLite)
 backend/*.db
 backend/*.sqlite
 backend/database.sqlite
@@ -51,9 +51,16 @@ tsc_output.txt
 .npm/
 .eslintcache
 
-# Testing
+# Testing / scratch
 coverage/
 .nyc_output/
+test-download.py
+test-ransomware-challenge.py
+
+# Event-specific / operational scripts (not needed for setup)
+update-ransomware.bat
+update-ransomware.sh
+exports/
 
 # Misc
 *.bak

@@ -1,79 +1,54 @@
-# 🎯 CyberHack CTF Platform - Gandhinagar University Tech Xtreme 2026
+# 🛡️ CyberHack CTF Platform
 
-A modern, real-time Capture The Flag (CTF) platform built with React, TypeScript, and NestJS.
+<p align="center">
+  <img src="public/logo.png" alt="CyberHack Logo" width="120" />
+</p>
 
----
+<p align="center">
+  A full-stack Capture The Flag (CTF) competition platform built for cybersecurity events.
+  Features real-time leaderboards, challenge management, admin panel, and participant tracking.
+</p>
 
-## 🚀 Quick Start
-
-### Prerequisites
-- Node.js 18+ and npm
-- SQLite3
-
-### Installation
-
-```bash
-# Install frontend dependencies
-npm install
-
-# Install backend dependencies
-cd backend
-npm install
-```
-
-### Running the Platform
-
-```bash
-# Terminal 1 - Start Backend
-cd backend
-npm run start:dev
-
-# Terminal 2 - Start Frontend
-npm run dev
-```
-
-**Access the platform:** http://localhost:5173
+<p align="center">
+  <img src="https://img.shields.io/badge/React-18-blue?logo=react" />
+  <img src="https://img.shields.io/badge/TypeScript-5-blue?logo=typescript" />
+  <img src="https://img.shields.io/badge/NestJS-Backend-red?logo=nestjs" />
+  <img src="https://img.shields.io/badge/TailwindCSS-3-cyan?logo=tailwindcss" />
+  <img src="https://img.shields.io/badge/SQLite-Database-lightgrey?logo=sqlite" />
+  <img src="https://img.shields.io/badge/Vite-Build-purple?logo=vite" />
+</p>
 
 ---
 
-## 📊 Event Information
+## 📸 Screenshots
 
-**Event:** Gandhinagar University - Tech Xtreme 2026  
-**Date:** March 18, 2026  
-**Duration:** 60 minutes  
-**Total Challenges:** 10  
-**Maximum Points:** 500
+> _Add screenshots of your platform here (e.g., the challenges page, leaderboard, admin panel)._
 
 ---
 
-## 🎯 Challenge Overview
+## ✨ Features
 
-### 🟢 Easy Challenges (5 × 10 points = 50 points)
-1. **Web Recon** - Analyze HTTP headers
-2. **Base64 Decoder** - Decode Base64 string
-3. **Hidden Comments** - Find flag in HTML comments
-4. **Robots Protocol** - Check robots.txt file
-5. **Cookie Tampering** - Modify cookie values
-
-### 🟡 Medium Challenges (4 × 50 points = 200 points)
-1. **SQL Injection 101** - Bypass login (Interactive HTML)
-2. **Command Injection** - Inject shell commands (Interactive HTML)
-3. **Weak RSA** - Factor and decrypt RSA
-4. **Image Steganography** - Extract hidden data (Interactive HTML)
-
-### 🔴 Hard Challenge (1 × 250 points = 250 points)
-1. **Ransomware Reversal** - Reverse XOR encryption (Programming)
+- 🏆 **Real-time Leaderboard** — Live score updates using Server-Sent Events (SSE)
+- 🧩 **Challenge Management** — Multiple categories (Web, Crypto, Forensics, Ransomware, etc.)
+- 🔐 **Authentication System** — User registration, login, and session management
+- 👤 **Admin Panel** — Full control over challenges, users, scores, and event settings
+- 📊 **Activity Tracking** — Tracks all flag submissions and participant activity
+- 🌐 **Local Network Support** — Designed to run on a LAN for in-person events
+- 📱 **Responsive UI** — Works on desktop and mobile browsers
+- 🎨 **Dark Hacker Theme** — Custom cyberpunk-inspired design
 
 ---
 
-## 🔑 Default Credentials
+## 🏗️ Tech Stack
 
-### Admin Account
-- **Username:** `SystemAdmin`
-- **Password:** `admin`
-
-### Test User (Optional)
-Create your own account via the registration page.
+| Layer | Technology |
+|-------|-----------|
+| **Frontend** | React 18, TypeScript, Vite |
+| **Styling** | TailwindCSS 3, Framer Motion |
+| **Backend** | NestJS (Node.js) |
+| **Database** | SQLite (via TypeORM) |
+| **Real-time** | Server-Sent Events (SSE) |
+| **Icons** | Lucide React |
 
 ---
 
@@ -81,274 +56,174 @@ Create your own account via the registration page.
 
 ```
 cyberhack-ctf-platform/
-├── backend/                    # NestJS backend
-│   ├── src/
-│   │   ├── admin/             # Admin management
-│   │   ├── auth/              # Authentication
-│   │   ├── challenges/        # Challenge logic
-│   │   ├── database/          # Database entities
-│   │   ├── events/            # Real-time events
-│   │   ├── leaderboard/       # Scoring system
-│   │   └── users/             # User management
-│   ├── cyberhack.db           # SQLite database
-│   └── package.json
-│
-├── components/                 # React components
-│   ├── ui/                    # UI components
-│   ├── Navbar.tsx
-│   ├── Terminal.tsx
-│   ├── HintSystem.tsx
-│   └── ...
-│
-├── pages/                      # Page components
-│   ├── Home.tsx
-│   ├── Auth.tsx
-│   ├── Challenges.tsx
-│   ├── ChallengeDetail.tsx
-│   └── Admin.tsx
-│
-├── public/
-│   └── challenge-files/       # Downloadable challenge files
-│       ├── sql-injection-login.html
-│       ├── command-injection.html
-│       ├── image-steganography.html
-│       └── weak-rsa-challenge.txt
-│
-├── services/                   # API services
-├── docs/                       # Documentation
-├── README.md                   # This file
-└── CHALLENGE_SOLUTIONS.md      # Complete walkthrough
+├── backend/                  # NestJS API server
+│   └── src/
+│       ├── auth/             # Authentication (JWT)
+│       ├── challenges/       # Challenge CRUD & flag validation
+│       ├── leaderboard/      # Score calculation & SSE
+│       ├── users/            # User management
+│       ├── admin/            # Admin-only routes
+│       ├── activity/         # Submission activity logs
+│       └── events/           # SSE event broadcasting
+├── components/               # Reusable React components
+├── pages/                    # Page-level components (Home, Challenges, Leaderboard)
+├── services/                 # API service layer
+├── utils/                    # Helper utilities
+├── types.ts                  # Shared TypeScript types
+├── constants.ts              # App-wide constants
+└── App.tsx                   # Root app & routing
 ```
 
 ---
 
-## 🎮 Features
+## 🚀 Getting Started
 
-### For Players
-- ✅ Real-time leaderboard
-- ✅ Live activity feed
-- ✅ Challenge timer system
-- ✅ Hint system (with point cost)
-- ✅ Personal statistics dashboard
-- ✅ Downloadable challenge files
-- ✅ Interactive challenges (HTML/JS)
+### Prerequisites
 
-### For Admins
-- ✅ User management
-- ✅ Challenge management
-- ✅ Event control (start/stop/reset)
-- ✅ Announcement system
-- ✅ Activity logs
-- ✅ Real-time monitoring
-- ✅ Ban/unban users
+- [Node.js](https://nodejs.org/) v18+
+- npm v9+
 
----
+### 1. Clone the Repository
 
-## 🛠️ Technology Stack
-
-### Frontend
-- **React 18** with TypeScript
-- **Vite** for build tooling
-- **TailwindCSS** for styling
-- **Lucide React** for icons
-- **Axios** for API calls
-
-### Backend
-- **NestJS** framework
-- **TypeORM** for database
-- **SQLite** database
-- **JWT** authentication
-- **bcrypt** for password hashing
-- **Server-Sent Events** for real-time updates
-
----
-
-## 📚 Documentation
-
-- **Challenge Solutions:** See `CHALLENGE_SOLUTIONS.md` for complete walkthrough
-- **User FAQ:** See `docs/USER_FAQ.md`
-- **Setup Guides:** See `docs/setup-guides/`
-
----
-
-## 🔧 Configuration
-
-### Environment Variables
-
-**Frontend (`.env.local`):**
-```env
-VITE_API_URL=http://localhost:3000
+```bash
+git clone https://github.com/pjblip/cyberhack-ctf-platform.git
+cd cyberhack-ctf-platform
 ```
 
-**Backend (`backend/.env`):**
-```env
-JWT_SECRET=your-secret-key-here
-PORT=3000
-```
+### 2. Set Up the Backend
 
----
-
-## 🗄️ Database
-
-The platform uses SQLite with the following main tables:
-- `users` - User accounts
-- `challenges` - Challenge definitions
-- `solves` - Completed challenges
-- `submissions` - All flag attempts
-- `activity_log` - Platform activity
-- `announcements` - Admin announcements
-
-**Database location:** `backend/cyberhack.db`
-
----
-
-## 🎯 Admin Panel
-
-Access: http://localhost:5173 → Login as admin → Click "Admin Panel"
-
-### Admin Features:
-- **Users Tab:** View, ban, delete users
-- **Challenges Tab:** Manage challenges
-- **Event Control:** Start/stop/reset event
-- **Announcements:** Broadcast messages
-- **Logs:** View activity logs
-- **Analytics:** Platform statistics
-
----
-
-## 🚨 Troubleshooting
-
-### Backend won't start
 ```bash
 cd backend
-rm -rf node_modules package-lock.json
 npm install
+```
+
+Create a `.env` file in the `backend/` folder:
+
+```env
+PORT=3000
+JWT_SECRET=your_super_secret_key_here
+NODE_ENV=development
+```
+
+Start the backend server:
+
+```bash
 npm run start:dev
 ```
 
-### Frontend won't start
+The API will be available at `http://localhost:3000`
+
+### 3. Set Up the Frontend
+
+Open a new terminal in the project root:
+
 ```bash
-rm -rf node_modules package-lock.json
 npm install
 npm run dev
 ```
 
-### Database issues
+The frontend will be available at `http://localhost:5173`
+
+### 4. (Optional) Run on Local Network
+
+To make the platform accessible to participants on the same Wi-Fi/LAN:
+
 ```bash
-cd backend
-# Backup current database
-cp cyberhack.db cyberhack.db.backup
-# Reset database (will lose data)
-rm cyberhack.db
-npm run start:dev  # Will recreate database
+npm run host
 ```
 
-### Port already in use
-```bash
-# Kill process on port 3000 (backend)
-npx kill-port 3000
+Share your machine's local IP (e.g., `http://192.168.1.x:5173`) with participants.
 
-# Kill process on port 5173 (frontend)
-npx kill-port 5173
+---
+
+## 🔑 Default Admin Access
+
+After first run, use the admin panel at `/admin` to:
+- Add/edit/delete challenges
+- Manage registered users
+- Monitor live submissions
+- Reset scores if needed
+
+> ⚠️ **Change the default admin credentials immediately before hosting an event.**
+
+---
+
+## 🧩 Challenge Categories
+
+The platform supports the following challenge types out of the box:
+
+| Category | Description |
+|----------|-------------|
+| 🌐 Web | SQL Injection, XSS, CSRF, etc. |
+| 🔐 Cryptography | Caesar, Base64, RSA, hashing |
+| 🔍 Forensics | File analysis, steganography |
+| 💀 Ransomware | Malware analysis challenges |
+| 🔢 Miscellaneous | Logic, OSINT, trivia |
+
+---
+
+## 📊 Architecture Overview
+
+```
+┌─────────────────────┐        HTTP/SSE       ┌──────────────────────┐
+│   React Frontend    │ ◄──────────────────► │   NestJS Backend     │
+│  (Vite + TS)        │                       │  (REST API + SSE)    │
+└─────────────────────┘                       └──────────┬───────────┘
+                                                         │
+                                                    TypeORM│
+                                                         ▼
+                                              ┌──────────────────────┐
+                                              │    SQLite Database   │
+                                              └──────────────────────┘
 ```
 
 ---
 
-## 📝 Development
+## 🛠️ Scripts Reference
 
-### Adding New Challenges
+| Script | Description |
+|--------|-------------|
+| `npm run dev` | Start frontend dev server |
+| `npm run host` | Start frontend on local network |
+| `npm run build` | Build frontend for production |
+| `cd backend && npm run start:dev` | Start backend in dev mode |
+| `backup-database.bat / .sh` | Backup the SQLite database |
+| `export-results.bat / .sh` | Export competition results to CSV |
 
-1. **Add to database:**
-```sql
-INSERT INTO challenges (id, title, description, difficulty, points, flag, file_url, duration, hints)
-VALUES (
-    'uuid-here',
-    'Challenge Title',
-    'Challenge description',
-    'medium',
-    50,
-    'flag{your_flag_here}',
-    '/challenge-files/your-file.html',
-    300,
-    json_array('hint1', 'hint2', 'hint3', 'hint4')
-);
-```
+---
 
-2. **Create challenge file** in `public/challenge-files/`
+## 🏆 Event Results
 
-3. **Test the challenge** thoroughly
+This platform was used to host **CyberHack CTF** — a live cybersecurity competition.
 
-### Running Tests
-```bash
-# Backend tests
-cd backend
-npm test
-
-# Frontend tests
-npm test
-```
+> _Add your event date, number of participants, top teams, and any highlights here._
 
 ---
 
 ## 🤝 Contributing
 
-This is an educational CTF platform for Gandhinagar University. For improvements or bug fixes:
+Contributions are welcome! If you'd like to improve this platform:
 
-1. Test your changes thoroughly
-2. Ensure all challenges work correctly
-3. Update documentation if needed
-4. Test with multiple users
-
----
-
-## 📄 License
-
-Educational use for Gandhinagar University - Tech Xtreme 2026
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/my-feature`
+3. Commit your changes: `git commit -m 'Add my feature'`
+4. Push to the branch: `git push origin feature/my-feature`
+5. Open a Pull Request
 
 ---
 
-## 🎓 Credits
+## 📜 License
 
-**Developed for:** Gandhinagar University  
-**Event:** Tech Xtreme 2026  
-**Platform:** CyberHack CTF  
+This project is licensed under the **MIT License** — feel free to use, modify, and distribute.
 
 ---
 
-## 📞 Support
+## 👨‍💻 Author
 
-For technical issues during the event:
-- Check `docs/USER_FAQ.md`
-- Contact event administrators
-- Check browser console for errors
+**Pushkar** — Built with ❤️ for the cybersecurity community.
 
----
-
-## 🎉 Event Day Checklist
-
-### Before Event:
-- [ ] Start backend server
-- [ ] Start frontend server
-- [ ] Test admin login
-- [ ] Verify all challenges work
-- [ ] Test flag submissions
-- [ ] Check leaderboard updates
-- [ ] Prepare announcements
-
-### During Event:
-- [ ] Monitor real-time activity
-- [ ] Watch for technical issues
-- [ ] Respond to questions (no spoilers!)
-- [ ] Track completion rates
-- [ ] Manage announcements
-
-### After Event:
-- [ ] Export leaderboard
-- [ ] Save activity logs
-- [ ] Backup database
-- [ ] Gather feedback
-- [ ] Prepare awards
+- GitHub: [@pjblip](https://github.com/pjblip)
 
 ---
 
-**🚀 Ready to hack! Good luck to all participants!**
+<p align="center">Made for hackers, by a hacker 🔓</p>
