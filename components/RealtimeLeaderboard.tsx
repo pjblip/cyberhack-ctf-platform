@@ -33,7 +33,7 @@ const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({ initialData, 
       setLeaderboard(prev => {
         // Find existing entry
         const existingIndex = prev.findIndex(e => e.userId === update.userId);
-        
+
         let updated: LeaderboardEntry[];
         if (existingIndex >= 0) {
           // Update existing entry, preserve previous rank
@@ -102,9 +102,8 @@ const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({ initialData, 
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            className={`relative bg-gradient-to-r ${getRankColor(entry.rank)} backdrop-blur-sm border rounded-lg p-4 overflow-hidden group ${
-              entry.userId === currentUserId ? 'ring-2 ring-cyan-500 shadow-[0_0_20px_rgba(6,182,212,0.3)]' : ''
-            }`}
+            className={`relative bg-gradient-to-r ${getRankColor(entry.rank)} backdrop-blur-sm border rounded-lg p-4 overflow-hidden group ${entry.userId === currentUserId ? 'ring-2 ring-cyan-500 shadow-[0_0_20px_rgba(6,182,212,0.3)]' : ''
+              }`}
           >
             {/* Animated Background on Hover */}
             <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -121,9 +120,8 @@ const RealtimeLeaderboard: React.FC<RealtimeLeaderboardProps> = ({ initialData, 
                 {/* User Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center space-x-2">
-                    <h3 className={`font-bold truncate ${
-                      entry.userId === currentUserId ? 'text-cyan-400' : 'text-white'
-                    }`}>
+                    <h3 className={`font-bold truncate ${entry.userId === currentUserId ? 'text-cyan-400' : 'text-white'
+                      }`}>
                       {entry.username}
                     </h3>
                     {entry.userId === currentUserId && (

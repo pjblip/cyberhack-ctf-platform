@@ -63,7 +63,7 @@ GET /admin-panel HTTP/1.1
 Host: secure.local
 User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:109.0) Gecko/20100101 Firefox/115.0
 Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8
-Cookie: session_id=user99812; role=admin; flag=flag{c00k13_m0nst3r}; theme=dark; track_id=88311;
+Cookie: session_id=user99812; role=admin; token=%66%6c%61%67%7bc00k13_m0nst3r%7d; theme=dark; track_id=88311;
 Connection: close
 
 [RESPONSE #4]

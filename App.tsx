@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { HashRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
+import { HashRouter, Routes, Route, Navigate, useNavigate, useLocation, useParams } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
 import { getUserStats } from './utils/storage';
 import Navbar from './components/Navbar';
@@ -8,7 +8,7 @@ import ChallengesPage from './pages/Challenges';
 import ChallengeDetailPage from './pages/ChallengeDetail';
 import AdminPage from './pages/Admin';
 import AuthPage from './pages/Auth';
-import FilesPage from './pages/Files';
+import ResourcesPage from './pages/Resources';
 import NotFound from './pages/NotFound';
 import { User, Challenge, Stats } from './types';
 import { ShieldAlert, Wifi, Activity, Cpu } from 'lucide-react';
@@ -24,6 +24,69 @@ import OnlineUsers from './components/OnlineUsers';
 import { unsubscribeAll } from './services/realtime';
 import ErrorBoundary from './components/ErrorBoundary';
 import WelcomeScreen from './components/WelcomeScreen';
+
+// Loader component that fetches a challenge by ID when selectedCase is null (e.g. page refresh)
+interface ChallengeDetailLoaderProps {
+  selectedCase: Challenge | null;
+  currentUser: User | null;
+  onBack: () => void;
+  onUpdateStats: (stats: Stats) => void;
+  onSelectChallenge: (challenge: Challenge) => void;
+  onSetCase: (challenge: Challenge) => void;
+}
+
+function ChallengeDetailLoader({ selectedCase, currentUser, onBack, onUpdateStats, onSelectChallenge, onSetCase }: ChallengeDetailLoaderProps) {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(!selectedCase);
+
+  useEffect(() => {
+    if (selectedCase || !id) return;
+    // Challenge not in state (page refresh / direct URL) — fetch it
+    import('./utils/storage').then(({ getChallenges }) => {
+      getChallenges().then(challenges => {
+        const found = challenges.find(c => c.id === id);
+        if (found) {
+          onSetCase(found);
+        } else {
+          navigate('/challenges', { replace: true });
+        }
+        setLoading(false);
+      }).catch(() => {
+        navigate('/challenges', { replace: true });
+      });
+    });
+  }, [id, selectedCase]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-40">
+        <div className="font-mono text-cyan-500 animate-pulse text-lg">LOADING MISSION DATA...</div>
+      </div>
+    );
+  }
+
+  if (!selectedCase) return null;
+
+  const pageVariants = {
+    initial: { opacity: 0, filter: 'blur(10px)', scale: 0.98 },
+    animate: { opacity: 1, filter: 'blur(0px)', scale: 1 },
+    exit: { opacity: 0, filter: 'blur(10px)', scale: 1.02 }
+  };
+  const pageTransition = { duration: 0.4, ease: [0.43, 0.13, 0.23, 0.96] as [number, number, number, number] };
+
+  return (
+    <motion.div key="challenge-detail" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={pageTransition}>
+      <ChallengeDetailPage
+        challenge={selectedCase}
+        currentUser={currentUser}
+        onBack={onBack}
+        onUpdateStats={onUpdateStats}
+        onSelectChallenge={onSelectChallenge}
+      />
+    </motion.div>
+  );
+}
 
 function AppContent() {
   const navigate = useNavigate();
@@ -111,6 +174,8 @@ function AppContent() {
 
   const handleSelectCase = (challenge: Challenge) => {
     setSelectedCase(challenge);
+    // Store the difficulty in sessionStorage so we can restore it when going back
+    sessionStorage.setItem('lastDifficulty', challenge.difficulty);
     navigate('/challenge/' + challenge.id);
   };
 
@@ -219,19 +284,14 @@ function AppContent() {
           } />
 
           <Route path="/challenge/:id" element={
-            selectedCase ? (
-              <motion.div key="challenge-detail" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={pageTransition}>
-                <ChallengeDetailPage
-                  challenge={selectedCase}
-                  currentUser={currentUser}
-                  onBack={() => navigate('/challenges')}
-                  onUpdateStats={(newStats) => setUserStats(newStats)}
-                  onSelectChallenge={handleSelectCase}
-                />
-              </motion.div>
-            ) : (
-              <Navigate to="/challenges" replace />
-            )
+            <ChallengeDetailLoader
+              selectedCase={selectedCase}
+              currentUser={currentUser}
+              onBack={() => navigate('/challenges')}
+              onUpdateStats={(newStats) => setUserStats(newStats)}
+              onSelectChallenge={handleSelectCase}
+              onSetCase={setSelectedCase}
+            />
           } />
 
           <Route path="/admin" element={
@@ -255,9 +315,9 @@ function AppContent() {
             )
           } />
 
-          <Route path="/files" element={
-            <motion.div key="files" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={pageTransition}>
-              <FilesPage currentUser={currentUser} onNavigate={navigateTo} />
+          <Route path="/resources" element={
+            <motion.div key="resources" variants={pageVariants} initial="initial" animate="animate" exit="exit" transition={pageTransition}>
+              <ResourcesPage />
             </motion.div>
           } />
 

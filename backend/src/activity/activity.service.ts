@@ -13,7 +13,7 @@ export class ActivityService {
     async getRecent() {
         const activities = await this.activityRepo.find({
             order: { createdAt: 'DESC' },
-            take: 30,
+            take: 50, // Backend returns 50, frontend will limit to 10 for display
         });
 
         return activities.map((a) => ({

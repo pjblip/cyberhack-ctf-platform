@@ -15,6 +15,11 @@ export class ChallengesController {
         return this.challengesService.listActive();
     }
 
+    @Get('solve-counts')
+    async getSolveCounts() {
+        return this.challengesService.getSolveCounts();
+    }
+
     @Post(':id/start')
     async start(
         @CurrentUser() user: any,
@@ -29,7 +34,12 @@ export class ChallengesController {
         @CurrentUser() user: any,
         @Param('id') challengeId: string,
     ) {
-        return this.challengesService.getAttempt(user.id, challengeId);
+        const attempt = await this.challengesService.getAttempt(user.id, challengeId);
+        const lockout = await this.challengesService.getLockoutStatus(user.id, challengeId);
+        return {
+            ...attempt,
+            lockout,
+        };
     }
 
     @Post(':id/submit')
@@ -40,11 +50,52 @@ export class ChallengesController {
         @Body('flag') flag: string,
         @Req() req: Request,
     ) {
-        // Extract real client IP (from nginx X-Real-IP header or fallback)
-        const ipAddress = (req.headers['x-real-ip'] as string)
-            || (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim()
-            || req.ip
-            || 'unknown';
-        return this.challengesService.submitFlag(user.id, challengeId, flag, ipAddress);
+        try {
+            // Extract real client IP (from nginx X-Real-IP header or fallback)
+            const ipAddress = (req.headers['x-real-ip'] as string)
+                || (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim()
+                || req.ip
+                || 'unknown';
+            
+            console.log('Flag submission:', { userId: user.id, challengeId, flag, ipAddress });
+            
+            const result = await this.challengesService.submitFlag(user.id, challengeId, flag, ipAddress);
+            
+            console.log('Submission result:', result);
+            
+            return result;
+        } catch (error) {
+            console.error('Flag submission error:', error);
+            throw error;
+        }
+    }
+
+    @Get(':id/hints')
+    async getHints(
+        @CurrentUser() user: any,
+        @Param('id') challengeId: string,
+    ) {
+        return this.challengesService.getHints(user.id, challengeId);
+    }
+
+    @Post(':id/hints/:hintIndex')
+    async purchaseHint(
+        @CurrentUser() user: any,
+        @Param('id') challengeId: string,
+        @Param('hintIndex') hintIndex: number,
+    ) {
+        return this.challengesService.purchaseHint(user.id, challengeId, Number(hintIndex));
+    }
+
+    @Get('stats/:userId')
+    async getUserStats(
+        @CurrentUser() user: any,
+        @Param('userId') userId: string,
+    ) {
+        // Users can only view their own stats unless they're admin
+        if (user.id !== userId && user.role !== 'admin') {
+            throw new Error('Unauthorized');
+        }
+        return this.challengesService.getUserStats(userId);
     }
 }

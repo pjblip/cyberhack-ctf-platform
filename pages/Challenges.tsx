@@ -1,10 +1,13 @@
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Check, ChevronRight, Lock, Clock, Shield, AlertTriangle, Skull, ArrowLeft, Users, Search, Activity, Server, Database } from 'lucide-react';
+import { Check, ChevronRight, Lock, Clock, Shield, AlertTriangle, Skull, ArrowLeft, Users, Search, Activity, Server, Database, BarChart3 } from 'lucide-react';
 import { getSolvedCases, getChallenges, getChallengeSolveCounts } from '../utils/storage';
 import Card from '../components/ui/Card';
 import MatrixBackground from '../components/MatrixBackground';
 import Button from '../components/ui/Button';
+import ChallengeFilters from '../components/ChallengeFilters';
+import ProgressIndicator from '../components/ProgressIndicator';
+import PersonalStats from '../components/PersonalStats';
 import { Challenge, User } from '../types';
 import { SkeletonChallenge } from '../components/ui/Skeleton';
 
@@ -20,6 +23,10 @@ const ChallengesPage: React.FC<ChallengesPageProps> = ({ currentUser, onSelectCa
   const [solveCounts, setSolveCounts] = useState<Record<string, number>>({});
   const [selectedDifficulty, setSelectedDifficulty] = useState<'easy' | 'medium' | 'hard' | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>([]);
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [showStats, setShowStats] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const MotionDiv = motion.div as any;
@@ -36,6 +43,14 @@ const ChallengesPage: React.FC<ChallengesPageProps> = ({ currentUser, onSelectCa
       setSolvedCases(solved);
       setChallenges(loadedChallenges);
       setSolveCounts(counts);
+      
+      // Restore the last difficulty filter if user is coming back from a challenge
+      const lastDifficulty = sessionStorage.getItem('lastDifficulty');
+      if (lastDifficulty && (lastDifficulty === 'easy' || lastDifficulty === 'medium' || lastDifficulty === 'hard')) {
+        setSelectedDifficulty(lastDifficulty);
+        // Clear it after restoring so it doesn't persist forever
+        sessionStorage.removeItem('lastDifficulty');
+      }
     } catch (err: any) {
       console.error('Failed to load challenges:', err);
       setError(err.message || 'Failed to connect to the server. Is the backend running?');
@@ -52,7 +67,7 @@ const ChallengesPage: React.FC<ChallengesPageProps> = ({ currentUser, onSelectCa
     return (
       <>
         <MatrixBackground />
-        <div className="fixed inset-0 flex items-center justify-center p-4" style={{ zIndex: 100 }}>
+        <div className="relative z-10 flex items-center justify-center min-h-[calc(100vh-6rem)] px-4">
           <div className="w-full max-w-md">
             <div className="bg-slate-900/95 backdrop-blur-xl border border-slate-700/50 rounded-2xl p-8 shadow-2xl relative">
               {/* Glow effect */}
@@ -169,6 +184,31 @@ const ChallengesPage: React.FC<ChallengesPageProps> = ({ currentUser, onSelectCa
   };
 
   if (!selectedDifficulty) {
+    // Show stats view if requested
+    if (showStats) {
+      return (
+        <div className="relative">
+          <MatrixBackground />
+          <div className="relative z-10 py-8 w-full max-w-[1200px] mx-auto px-4">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-4xl font-black text-white tracking-tight">
+                AGENT STATISTICS
+              </h2>
+              <Button 
+                onClick={() => setShowStats(false)}
+                variant="secondary"
+                className="flex items-center"
+              >
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Challenges
+              </Button>
+            </div>
+            <PersonalStats currentUser={currentUser} />
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className="relative">
         <MatrixBackground />
@@ -192,6 +232,23 @@ const ChallengesPage: React.FC<ChallengesPageProps> = ({ currentUser, onSelectCa
             >
               Choose your clearance level. Higher tiers require advanced cryptographic knowledge and rapid response times.
             </motion.p>
+            
+            {/* Stats Button */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className="mt-6"
+            >
+              <Button 
+                onClick={() => setShowStats(true)}
+                variant="secondary"
+                className="flex items-center mx-auto"
+              >
+                <BarChart3 className="w-4 h-4 mr-2" />
+                View Personal Stats
+              </Button>
+            </motion.div>
           </div>
 
           <MotionDiv
@@ -284,11 +341,49 @@ const ChallengesPage: React.FC<ChallengesPageProps> = ({ currentUser, onSelectCa
   }
 
   const filteredCases = challenges
-    .filter(c => c.difficulty?.toString().trim().toLowerCase() === selectedDifficulty)
-    .filter(c =>
-      (c.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (c.description || '').toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    .filter(c => {
+      // Difficulty filter (when a specific difficulty is selected)
+      if (selectedDifficulty && c.difficulty?.toString().trim().toLowerCase() !== selectedDifficulty) {
+        return false;
+      }
+      
+      // Multi-difficulty filter (when using advanced filters)
+      if (!selectedDifficulty && selectedDifficulties.length > 0) {
+        if (!selectedDifficulties.includes(c.difficulty?.toString().trim().toLowerCase())) {
+          return false;
+        }
+      }
+      
+      // Category filter
+      if (selectedCategories.length > 0) {
+        const challengeCategory = c.category?.name?.toLowerCase() || 'web'; // default to web
+        if (!selectedCategories.some(cat => challengeCategory.includes(cat))) {
+          return false;
+        }
+      }
+      
+      // Status filter
+      if (statusFilter !== 'all') {
+        const isSolved = solvedCases.includes(c.id);
+        const isAttempted = false; // TODO: Add attempt tracking
+        
+        switch (statusFilter) {
+          case 'solved':
+            if (!isSolved) return false;
+            break;
+          case 'attempted':
+            if (!isAttempted || isSolved) return false;
+            break;
+          case 'not_started':
+            if (isSolved || isAttempted) return false;
+            break;
+        }
+      }
+      
+      // Search filter
+      return (c.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+             (c.description || '').toLowerCase().includes(searchTerm.toLowerCase());
+    });
 
   const totalPoints = challenges.filter(c => c.difficulty?.toString().trim().toLowerCase() === selectedDifficulty).reduce((acc, curr) => acc + curr.points, 0);
   const userPointsInTier = challenges.filter(c => c.difficulty?.toString().trim().toLowerCase() === selectedDifficulty)
@@ -320,31 +415,19 @@ const ChallengesPage: React.FC<ChallengesPageProps> = ({ currentUser, onSelectCa
                   <Activity className="w-5 h-5 mr-2" />
                   MISSION CONTROL: {selectedDifficulty}
                 </h2>
-                <button
-                  onClick={() => setSelectedDifficulty(null)}
-                  className="text-xs font-mono text-slate-400 hover:text-white flex items-center border border-slate-700 hover:border-slate-500 px-3 py-1 rounded transition-all"
-                >
-                  <ArrowLeft className="w-3 h-3 mr-1" /> CHANGE TIER
-                </button>
-              </div>
-
-              <div className="flex items-center gap-4">
-                <div className="relative flex-grow">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Search className="h-4 w-4 text-slate-500" />
-                  </div>
-                  <input
-                    type="text"
-                    placeholder="SEARCH_DATABASE..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="block w-full pl-10 pr-3 py-2.5 bg-slate-950 border border-slate-700 rounded-lg text-slate-200 placeholder-slate-600 font-mono text-sm focus:outline-none focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 transition-colors"
-                  />
-                </div>
-                <div className="hidden sm:flex items-center space-x-2">
-                  <span className="text-xs text-slate-500 font-mono">FILTERS:</span>
-                  <span className="px-2 py-1 bg-cyan-900/20 border border-cyan-500/30 text-cyan-500 text-xs rounded cursor-pointer hover:bg-cyan-900/40">WEB</span>
-                  <span className="px-2 py-1 bg-purple-900/20 border border-purple-500/30 text-purple-500 text-xs rounded cursor-pointer hover:bg-purple-900/40">CRYPTO</span>
+                <div className="flex items-center space-x-2">
+                  <button
+                    onClick={() => setShowStats(true)}
+                    className="text-xs font-mono text-slate-400 hover:text-white flex items-center border border-slate-700 hover:border-slate-500 px-3 py-1 rounded transition-all"
+                  >
+                    <BarChart3 className="w-3 h-3 mr-1" /> STATS
+                  </button>
+                  <button
+                    onClick={() => setSelectedDifficulty(null)}
+                    className="text-xs font-mono text-slate-400 hover:text-white flex items-center border border-slate-700 hover:border-slate-500 px-3 py-1 rounded transition-all"
+                  >
+                    <ArrowLeft className="w-3 h-3 mr-1" /> CHANGE TIER
+                  </button>
                 </div>
               </div>
             </div>
@@ -385,6 +468,20 @@ const ChallengesPage: React.FC<ChallengesPageProps> = ({ currentUser, onSelectCa
           </div>
         </div>
 
+        {/* Advanced Filters */}
+        <ChallengeFilters
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+          selectedCategories={selectedCategories}
+          onCategoryChange={setSelectedCategories}
+          selectedDifficulties={selectedDifficulties}
+          onDifficultyChange={setSelectedDifficulties}
+          statusFilter={statusFilter}
+          onStatusChange={setStatusFilter}
+          totalChallenges={challenges.filter(c => c.difficulty?.toString().trim().toLowerCase() === selectedDifficulty).length}
+          filteredCount={filteredCases.length}
+        />
+
         <div className="w-full">
           <MotionDiv
             layout
@@ -402,12 +499,7 @@ const ChallengesPage: React.FC<ChallengesPageProps> = ({ currentUser, onSelectCa
               ) : filteredCases.map((challenge) => {
                 const isSolved = solvedCases.includes(challenge.id);
                 const solvedCount = solveCounts[challenge.id] || 0;
-
-                const difficultyColor = {
-                  easy: 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20',
-                  medium: 'text-yellow-400 bg-yellow-400/10 border-yellow-400/20',
-                  hard: 'text-red-400 bg-red-400/10 border-red-400/20',
-                }[challenge.difficulty];
+                const status = isSolved ? 'solved' : 'not_started'; // TODO: Add 'attempted' logic
 
                 return (
                   <MotionDiv key={challenge.id} variants={item} layout>
@@ -426,22 +518,13 @@ const ChallengesPage: React.FC<ChallengesPageProps> = ({ currentUser, onSelectCa
                       )}
 
                       <div>
-                        <div className="flex justify-between items-start mb-4 relative z-10">
-                          <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide border ${difficultyColor}`}>
-                            {challenge.difficulty}
-                          </span>
-                          {isSolved ? (
-                            <div className="flex items-center text-emerald-400 text-[10px] font-bold bg-emerald-900/30 px-2 py-1 rounded border border-emerald-500/20">
-                              <Check className="w-3 h-3 mr-1" /> MISSION COMPLETE
-                            </div>
-                          ) : (
-                            <div className="flex items-center space-x-2 bg-slate-900/80 px-2 py-1 rounded border border-slate-700 shadow-sm">
-                              <span className="text-cyan-400 font-mono font-bold text-xs">
-                                {challenge.points} PTS
-                              </span>
-                            </div>
-                          )}
-                        </div>
+                        {/* Progress Indicator */}
+                        <ProgressIndicator
+                          status={status}
+                          difficulty={challenge.difficulty as 'easy' | 'medium' | 'hard'}
+                          estimatedTime={challenge.estimatedTime}
+                          className="mb-4 relative z-10"
+                        />
 
                         <h3 className="text-lg font-bold text-white mb-2 group-hover:text-cyan-400 transition-colors line-clamp-1 relative z-10 tracking-tight">
                           {challenge.title}
@@ -452,9 +535,14 @@ const ChallengesPage: React.FC<ChallengesPageProps> = ({ currentUser, onSelectCa
                       </div>
 
                       <div className="flex justify-between items-center mt-auto pt-4 border-t border-slate-800/50 relative z-10">
-                        <span className="text-slate-600 text-[10px] font-mono flex items-center uppercase" title={`${solvedCount} agents solved this`}>
-                          <Users className="w-3 h-3 mr-1" /> {solvedCount} Agents
-                        </span>
+                        <div className="flex items-center space-x-3">
+                          <span className="text-slate-600 text-[10px] font-mono flex items-center uppercase" title={`${solvedCount} agents solved this`}>
+                            <Users className="w-3 h-3 mr-1" /> {solvedCount}
+                          </span>
+                          <span className="text-cyan-400 font-mono font-bold text-xs">
+                            {challenge.points} PTS
+                          </span>
+                        </div>
                         <div className={`flex items-center text-xs font-bold transition-colors ${isSolved ? 'text-emerald-500' : 'text-slate-500 group-hover:text-white'}`}>
                           {isSolved ? 'REVIEW INTEL' : 'INITIATE'} <ChevronRight className="w-3 h-3 ml-1 transform group-hover:translate-x-1 transition-transform" />
                         </div>

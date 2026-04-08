@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hidden Credentials - Web Security Challenge</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #22d3ee;
+            padding: 30px;
+            margin: 0;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: rgba(15, 23, 42, 0.95);
+            border: 2px solid #22d3ee;
+            border-radius: 10px;
+            padding: 35px;
+            box-shadow: 0 0 30px rgba(34, 211, 238, 0.3);
+        }
+        h1 {
+            text-align: center;
+            color: #fbbf24;
+            text-shadow: 0 0 10px rgba(251, 191, 36, 0.8);
+            margin-bottom: 5px;
+            font-size: 22px;
+        }
+        .subtitle { text-align: center; color: #64748b; margin-bottom: 25px; font-size: 13px; }
+
+        /* Mission Box */
+        .mission-box {
+            background: #1c1917;
+            border: 2px solid #fbbf24;
+            padding: 15px 20px;
+            border-radius: 6px;
+            margin: 20px 0;
+        }
+        .mission-box h3 { color: #fbbf24; margin: 0 0 10px 0; font-size: 14px; }
+        .mission-box ol { color: #e2e8f0; margin: 0; padding-left: 20px; font-size: 13px; }
+        .mission-box li { margin: 6px 0; }
+        .mission-box code { color: #22d3ee; background: #0f172a; padding: 2px 6px; border-radius: 3px; }
+
+        /* Login Form */
+        .login-container {
+            background: #1e293b;
+            border-radius: 8px;
+            border: 2px solid #334155;
+            padding: 30px;
+            margin: 20px 0;
+        }
+        .login-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        .company-logo { color: #22d3ee; font-size: 18px; font-weight: bold; }
+        .login-subtitle { color: #64748b; font-size: 12px; margin-top: 5px; }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label { 
+            display: block; 
+            color: #94a3b8; 
+            margin-bottom: 8px; 
+            font-size: 13px; 
+            font-weight: bold;
+        }
+        .form-input {
+            width: 100%;
+            padding: 12px 15px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            color: #22d3ee;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+        .form-input:focus { border-color: #22d3ee; outline: none; }
+        .form-input::placeholder { color: #475569; }
+
+        .btn {
+            width: 100%;
+            background: #22d3ee;
+            color: #0f172a;
+            border: none;
+            border-radius: 6px;
+            padding: 12px 16px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            transition: all 0.2s;
+            margin-bottom: 15px;
+        }
+        .btn:hover { background: #06b6d4; }
+        .btn-secondary {
+            background: #475569;
+            color: #e2e8f0;
+        }
+        .btn-secondary:hover { background: #64748b; }
+
+        /* Pages */
+        .page { display: none; }
+        .page.active { display: block; }
+
+        .dashboard {
+            text-align: center;
+            padding: 20px 0;
+        }
+        .dashboard h2 { color: #22d3ee; margin-bottom: 15px; }
+        .dashboard p { color: #94a3b8; margin-bottom: 15px; }
+
+        .admin-dashboard {
+            text-align: center;
+            padding: 20px 0;
+        }
+        .admin-dashboard h2 { color: #10b981; margin-bottom: 15px; }
+        .flag-box {
+            background: #0f172a;
+            border: 2px solid #10b981;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .flag-text {
+            color: #10b981;
+            font-size: 18px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .error-message {
+            background: #7f1d1d;
+            border: 1px solid #ef4444;
+            color: #fecaca;
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+            font-size: 13px;
+            text-align: center;
+        }
+
+        .demo-accounts {
+            background: #1c1917;
+            border: 1px solid #fbbf24;
+            border-radius: 4px;
+            padding: 12px;
+            margin: 15px 0;
+            font-size: 12px;
+        }
+        .demo-accounts h4 { color: #fbbf24; margin: 0 0 8px 0; }
+        .demo-accounts p { color: #a3a3a3; margin: 4px 0; }
+        .credential-link {
+            color: #22d3ee;
+            cursor: pointer;
+            text-decoration: underline;
+            transition: color 0.2s;
+        }
+        .credential-link:hover { color: #06b6d4; }
+
+        .footer { text-align: center; margin-top: 25px; color: #475569; font-size: 12px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🔐 HIDDEN CREDENTIALS CHALLENGE</h1>
+    <div class="subtitle">Web Security — Easy | 10 Points</div>
+
+    <div class="mission-box">
+        <h3>🎯 YOUR MISSION</h3>
+        <ol>
+            <li>Login with any demo account to access the system</li>
+            <li>Right-click and "View Page Source" to inspect the HTML code</li>
+            <li>Find the hidden admin username and password in the source code</li>
+            <li>Logout and login again using the admin credentials</li>
+            <li>Access the admin dashboard to retrieve the flag</li>
+        </ol>
+    </div>
+
+    <!-- Login Page -->
+    <div class="page login-page active" id="page-login">
+        <div class="login-container">
+            <div class="login-header">
+                <div class="company-logo">🏢 SecureCorp Portal</div>
+                <div class="login-subtitle">Employee Access System</div>
+            </div>
+
+            <form id="loginForm" onsubmit="return handleLogin(event)">
+                <div class="form-group">
+                    <label for="username">Username:</label>
+                    <input type="text" id="username" class="form-input" placeholder="Enter your username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" class="form-input" placeholder="Enter your password" required>
+                </div>
+
+                <button type="submit" class="btn">🔑 Login</button>
+                
+                <div id="errorMessage" class="error-message" style="display: none;"></div>
+            </form>
+
+            <div class="demo-accounts">
+                <h4>📋 Demo Accounts (For Testing)</h4>
+                <p><strong>Employee:</strong> <span class="credential-link" onclick="fillCredentials('john', 'password123')">john / password123</span></p>
+                <p><strong>Manager:</strong> <span class="credential-link" onclick="fillCredentials('sarah', 'manager456')">sarah / manager456</span></p>
+                <p><strong>Guest:</strong> <span class="credential-link" onclick="fillCredentials('guest', 'guest789')">guest / guest789</span></p>
+                <p style="color:#64748b; font-size:11px; margin-top:8px;">
+                    💡 Click on any credential above to auto-fill the form
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Dashboard -->
+    <div class="page user-dashboard" id="page-user">
+        <div class="dashboard">
+            <h2>📊 Employee Dashboard</h2>
+            <p>Welcome, <span id="currentUser"></span>!</p>
+            <p style="color:#64748b;">You have standard employee access.</p>
+            <button class="btn btn-secondary" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div class="page admin-dashboard" id="page-admin">
+        <div class="admin-dashboard">
+            <h2>⚡ Administrator Dashboard</h2>
+            <p>Welcome, Administrator! You have full system access.</p>
+            <div class="flag-box">
+                <p style="color:#64748b; font-size:12px; margin:0 0 8px 0;">🏴 FLAG CAPTURED</p>
+                <div class="flag-text">flag{c00k13_m0nst3r}</div>
+            </div>
+            <p style="color:#475569; font-size:12px;">
+                Real-world lesson: Never store credentials in client-side code.
+                Always use secure server-side authentication.
+            </p>
+            <button class="btn btn-secondary" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>━━━━━━━━━━━━━━━━━━━━━━━━━━━━</p>
+        <p>🎓 Gandhinagar University — Tech Xtreme 2026</p>
+        <p>━━━━━━━━━━━━━━━━━━━━━━━━━━━━</p>
+    </div>
+</div>
+
+<script>
+    // Demo user accounts
+    const users = {
+        'john': { password: 'password123', role: 'employee' },
+        'sarah': { password: 'manager456', role: 'manager' },
+        'guest': { password: 'guest789', role: 'guest' }
+    };
+
+    // Hidden admin credentials (users need to find these in source code)
+    // TODO: Remove these hardcoded credentials before production!
+    // ADMIN_USERNAME: administrator
+    // ADMIN_PASSWORD: SecureAdmin2026!
+    const adminCredentials = {
+        username: 'administrator',
+        password: 'SecureAdmin2026!'
+    };
+
+    function fillCredentials(username, password) {
+        document.getElementById('username').value = username;
+        document.getElementById('password').value = password;
+    }
+
+    function handleLogin(event) {
+        event.preventDefault();
+        
+        const username = document.getElementById('username').value.trim().toLowerCase();
+        const password = document.getElementById('password').value;
+        const errorDiv = document.getElementById('errorMessage');
+
+        // Debug logging
+        console.log('Login attempt:', username, password);
+
+        // Clear previous errors
+        errorDiv.style.display = 'none';
+
+        // Check admin credentials first (case insensitive username)
+        if (username === adminCredentials.username.toLowerCase() && password === adminCredentials.password) {
+            console.log('Admin login successful');
+            showAdminDashboard();
+            return false;
+        }
+
+        // Check regular user accounts (case insensitive username)
+        const userKey = Object.keys(users).find(key => key.toLowerCase() === username);
+        if (userKey && users[userKey].password === password) {
+            console.log('User login successful:', userKey);
+            showUserDashboard(userKey);
+            return false;
+        }
+
+        // Invalid credentials
+        console.log('Login failed for:', username);
+        showError('Invalid username or password. Try: john/password123 or sarah/manager456 or guest/guest789');
+        return false;
+    }
+
+    function showUserDashboard(username) {
+        document.getElementById('currentUser').textContent = username;
+        showPage('user');
+    }
+
+    function showAdminDashboard() {
+        showPage('admin');
+    }
+
+    function showError(message) {
+        const errorDiv = document.getElementById('errorMessage');
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+    }
+
+    function logout() {
+        // Clear form
+        document.getElementById('username').value = '';
+        document.getElementById('password').value = '';
+        showPage('login');
+    }
+
+    function showPage(pageName) {
+        // Hide all pages
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        
+        // Show requested page
+        const page = document.getElementById('page-' + pageName);
+        if (page) page.classList.add('active');
+    }
+
+    // Initialize
+    showPage('login');
+</script>
+
+<!-- 
+    DEVELOPER NOTES (CONFIDENTIAL):
+    ================================
+    
+    For emergency admin access, use these credentials:
+    Username: administrator
+    Password: SecureAdmin2026!
+    
+    TODO: Move these to environment variables!
+    TODO: Implement proper authentication system!
+    TODO: Remove hardcoded passwords from source code!
+    
+    Last updated: March 2026
+    Developer: John Smith (john.smith@securecorp.com)
+-->
+
+</body>
+</html>

@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Shield, Users, AlertTriangle, Trash2, RefreshCw, Terminal, Activity, Lock, Upload, Download, Edit, Plus, BarChart3, UserCog, Crown } from 'lucide-react';
+import { Shield, Users, AlertTriangle, Trash2, RefreshCw, Terminal, Activity, Lock, Upload, Download, Edit, Plus, BarChart3, UserCog, Crown, Radio, Megaphone, Database } from 'lucide-react';
 import { db } from '../services/db';
 import { User } from '../types';
 import Button from '../components/ui/Button';
 import GlitchText from '../components/ui/GlitchText';
 import LeaderboardPage from './Leaderboard';
 import { SkeletonTable } from '../components/ui/Skeleton';
+import LiveDashboard from '../components/LiveDashboard';
+import AnnouncementPanel from '../components/AnnouncementPanel';
 
 interface AdminPageProps {
   currentUser: User | null;
@@ -14,7 +16,7 @@ interface AdminPageProps {
 }
 
 const AdminPage: React.FC<AdminPageProps> = ({ currentUser, onNavigate }) => {
-  const [activeTab, setActiveTab] = useState<'users' | 'challenges' | 'analytics' | 'leaderboard' | 'control' | 'logs'>('users');
+  const [activeTab, setActiveTab] = useState<'live' | 'users' | 'challenges' | 'analytics' | 'leaderboard' | 'control' | 'logs'>('live');
   const [users, setUsers] = useState<any[]>([]);
   const [challenges, setChallenges] = useState<any[]>([]);
   const [analytics, setAnalytics] = useState<any>(null);
@@ -26,6 +28,8 @@ const AdminPage: React.FC<AdminPageProps> = ({ currentUser, onNavigate }) => {
   const [showAnnouncement, setShowAnnouncement] = useState(false);
   const [eventStatus, setEventStatus] = useState<'not_started' | 'running' | 'ended'>('not_started');
   const [systemLogs, setSystemLogs] = useState<any[]>([]);
+  const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Protect Route
   if (!currentUser?.isAdmin) {
@@ -175,6 +179,90 @@ const AdminPage: React.FC<AdminPageProps> = ({ currentUser, onNavigate }) => {
     }
   };
 
+  // Bulk Actions
+  const toggleUserSelection = (userId: string) => {
+    setSelectedUsers(prev =>
+      prev.includes(userId)
+        ? prev.filter(id => id !== userId)
+        : [...prev, userId]
+    );
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedUsers.length === filteredUsers.length) {
+      setSelectedUsers([]);
+    } else {
+      setSelectedUsers(filteredUsers.map(u => u.id));
+    }
+  };
+
+  const handleBulkBan = async () => {
+    if (selectedUsers.length === 0) return;
+    if (confirm(`Ban ${selectedUsers.length} selected users?`)) {
+      setIsLoading(true);
+      const res = await db.admin.bulkBanUsers(selectedUsers);
+      if (res.success) {
+        setStatusMessage(`✅ Banned ${res.count} users`);
+        setSelectedUsers([]);
+        fetchUsers();
+      } else {
+        setStatusMessage('❌ Failed to ban users');
+        setIsLoading(false);
+      }
+    }
+  };
+
+  const handleBulkReset = async () => {
+    if (selectedUsers.length === 0) return;
+    if (confirm(`Reset progress for ${selectedUsers.length} selected users? This will set their points to 0 and remove all solves.`)) {
+      setIsLoading(true);
+      const res = await db.admin.bulkResetUsers(selectedUsers);
+      if (res.success) {
+        setStatusMessage(`✅ Reset ${res.count} users`);
+        setSelectedUsers([]);
+        fetchUsers();
+      } else {
+        setStatusMessage('❌ Failed to reset users');
+        setIsLoading(false);
+      }
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    if (selectedUsers.length === 0) return;
+    if (confirm(`⚠️ PERMANENTLY DELETE ${selectedUsers.length} selected users? This CANNOT be undone!`)) {
+      if (confirm('Are you ABSOLUTELY sure? This will delete all their data.')) {
+        setIsLoading(true);
+        const res = await db.admin.bulkDeleteUsers(selectedUsers);
+        if (res.success) {
+          setStatusMessage(`✅ Deleted ${res.count} users`);
+          setSelectedUsers([]);
+          fetchUsers();
+        } else {
+          setStatusMessage('❌ Failed to delete users');
+          setIsLoading(false);
+        }
+      }
+    }
+  };
+
+  const handleBackup = async () => {
+    setIsLoading(true);
+    const res = await db.admin.createBackup();
+    if (res.success) {
+      setStatusMessage(`✅ Backup created: ${res.filename}`);
+    } else {
+      setStatusMessage('❌ Failed to create backup');
+    }
+    setIsLoading(false);
+  };
+
+  // Filter users based on search
+  const filteredUsers = users.filter(user =>
+    user.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    user.email.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   const handleExportLeaderboard = async () => {
     const leaderboard = await db.leaderboard.get();
     const csv = [
@@ -283,6 +371,12 @@ const AdminPage: React.FC<AdminPageProps> = ({ currentUser, onNavigate }) => {
           <Terminal className="w-5 h-5 mr-2" /> Event Control
         </button>
         <button
+          onClick={() => setActiveTab('live')}
+          className={`flex items-center px-6 py-3 rounded-t-lg font-bold transition-all border-t-2 whitespace-nowrap ${activeTab === 'live' ? 'bg-slate-900 border-emerald-500 text-white' : 'bg-slate-900/30 border-transparent text-slate-500 hover:text-emerald-400'}`}
+        >
+          <Radio className="w-5 h-5 mr-2" /> Live Dashboard
+        </button>
+        <button
           onClick={() => setActiveTab('users')}
           className={`flex items-center px-6 py-3 rounded-t-lg font-bold transition-all border-t-2 whitespace-nowrap ${activeTab === 'users' ? 'bg-slate-900 border-cyan-500 text-white' : 'bg-slate-900/30 border-transparent text-slate-500 hover:text-cyan-400'}`}
         >
@@ -316,12 +410,38 @@ const AdminPage: React.FC<AdminPageProps> = ({ currentUser, onNavigate }) => {
 
       {/* Content Area */}
       <div className="bg-slate-900/50 border border-slate-800 rounded-b-xl rounded-tr-xl p-6 min-h-[500px]">
+        {activeTab === 'live' && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            <LiveDashboard />
+          </motion.div>
+        )}
+
         {activeTab === 'control' && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <h3 className="text-xl font-bold text-white flex items-center mb-6">
               <Terminal className="w-5 h-5 mr-2 text-red-500" />
               Event Control Center
             </h3>
+
+            {/* Announcement Panel */}
+            <div className="mb-8">
+              <AnnouncementPanel />
+            </div>
+
+            {/* Backup Button */}
+            <div className="mb-8">
+              <Button
+                onClick={handleBackup}
+                icon={<Database className="w-4 h-4" />}
+                disabled={isLoading}
+                className="bg-purple-600 hover:bg-purple-700"
+              >
+                {isLoading ? 'Creating Backup...' : 'Create Database Backup'}
+              </Button>
+              <p className="text-slate-400 text-sm mt-2">
+                Creates a backup of the entire database. Recommended before making major changes.
+              </p>
+            </div>
 
             {/* Event Status */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -427,7 +547,7 @@ const AdminPage: React.FC<AdminPageProps> = ({ currentUser, onNavigate }) => {
             animate={{ opacity: 1 }}
             className="overflow-x-auto"
           >
-            <div className="flex justify-between items-center mb-6">
+            <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold text-white flex items-center">
                 <Users className="w-5 h-5 mr-2 text-cyan-500" />
                 Registered Agents ({users.length})
@@ -442,12 +562,69 @@ const AdminPage: React.FC<AdminPageProps> = ({ currentUser, onNavigate }) => {
               </div>
             </div>
 
+            {/* Search Bar */}
+            <div className="mb-4">
+              <input
+                type="text"
+                placeholder="Search users by username or email..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-cyan-500 transition-colors"
+              />
+            </div>
+
+            {/* Bulk Actions */}
+            {selectedUsers.length > 0 && (
+              <div className="mb-4 p-4 bg-cyan-900/20 border border-cyan-500/30 rounded-lg flex items-center justify-between">
+                <span className="text-white font-medium">
+                  {selectedUsers.length} user(s) selected
+                </span>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handleBulkBan}
+                    disabled={isLoading}
+                    className="bg-orange-600 hover:bg-orange-700"
+                  >
+                    <UserCog className="w-4 h-4 mr-2" /> Ban Selected
+                  </Button>
+                  <Button
+                    onClick={handleBulkReset}
+                    disabled={isLoading}
+                    className="bg-yellow-600 hover:bg-yellow-700"
+                  >
+                    <RefreshCw className="w-4 h-4 mr-2" /> Reset Selected
+                  </Button>
+                  <Button
+                    onClick={handleBulkDelete}
+                    disabled={isLoading}
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" /> Delete Selected
+                  </Button>
+                  <Button
+                    onClick={() => setSelectedUsers([])}
+                    variant="secondary"
+                  >
+                    Clear Selection
+                  </Button>
+                </div>
+              </div>
+            )}
+
             {isLoading ? (
-              <SkeletonTable rows={8} columns={6} />
+              <SkeletonTable rows={8} columns={7} />
             ) : (
               <table className="w-full text-left border-collapse font-mono text-sm">
                 <thead>
                   <tr className="bg-slate-950 text-slate-400 uppercase tracking-wider">
+                    <th className="p-4 border-b border-slate-800">
+                      <input
+                        type="checkbox"
+                        checked={selectedUsers.length === filteredUsers.length && filteredUsers.length > 0}
+                        onChange={toggleSelectAll}
+                        className="w-4 h-4 rounded border-slate-600 bg-slate-800 text-cyan-500 focus:ring-cyan-500"
+                      />
+                    </th>
                     <th className="p-4 border-b border-slate-800">Username</th>
                     <th className="p-4 border-b border-slate-800">Email</th>
                     <th className="p-4 border-b border-slate-800">Points</th>
@@ -457,8 +634,16 @@ const AdminPage: React.FC<AdminPageProps> = ({ currentUser, onNavigate }) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((user) => (
+                  {filteredUsers.map((user) => (
                     <tr key={user.id} className="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+                      <td className="p-4">
+                        <input
+                          type="checkbox"
+                          checked={selectedUsers.includes(user.id)}
+                          onChange={() => toggleUserSelection(user.id)}
+                          className="w-4 h-4 rounded border-slate-600 bg-slate-800 text-cyan-500 focus:ring-cyan-500"
+                        />
+                      </td>
                       <td className="p-4 font-bold text-white">{user.username}</td>
                       <td className="p-4 text-slate-400">{user.email}</td>
                       <td className="p-4 text-cyan-400">{user.points}</td>

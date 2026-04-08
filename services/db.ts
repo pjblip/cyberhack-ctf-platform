@@ -63,6 +63,38 @@ export const db = {
         return { success: false, message: error.message || 'Submission failed.' };
       }
     },
+
+    getSolveCounts: async (): Promise<Record<string, number>> => {
+      try {
+        return await api.get<Record<string, number>>('/challenges/solve-counts');
+      } catch {
+        return {};
+      }
+    },
+
+    getHints: async (challengeId: string) => {
+      try {
+        return await api.get(`/challenges/${challengeId}/hints`);
+      } catch (error: any) {
+        return { hints: [], purchased: [] };
+      }
+    },
+
+    purchaseHint: async (challengeId: string, hintIndex: number) => {
+      try {
+        return await api.post(`/challenges/${challengeId}/hints/${hintIndex}`);
+      } catch (error: any) {
+        throw new Error(error.message || 'Failed to purchase hint');
+      }
+    },
+
+    getUserStats: async (userId: string) => {
+      try {
+        return await api.get(`/challenges/stats/${userId}`);
+      } catch (error: any) {
+        throw new Error(error.message || 'Failed to fetch user stats');
+      }
+    },
   },
 
   user: {
@@ -144,6 +176,30 @@ export const db = {
       }
     },
 
+    bulkBanUsers: async (userIds: string[]) => {
+      try {
+        return await api.post<any>('/admin/users/bulk/ban', { userIds });
+      } catch (error: any) {
+        return { success: false, message: error.message };
+      }
+    },
+
+    bulkResetUsers: async (userIds: string[]) => {
+      try {
+        return await api.post<any>('/admin/users/bulk/reset', { userIds });
+      } catch (error: any) {
+        return { success: false, message: error.message };
+      }
+    },
+
+    bulkDeleteUsers: async (userIds: string[]) => {
+      try {
+        return await api.post<any>('/admin/users/bulk/delete', { userIds });
+      } catch (error: any) {
+        return { success: false, message: error.message };
+      }
+    },
+
     bulkUploadChallenges: async (challenges: any[]) => {
       try {
         return await api.post<any>('/admin/challenges/bulk', challenges);
@@ -191,6 +247,38 @@ export const db = {
           avgPoints: 0,
           topChallenges: [],
         };
+      }
+    },
+
+    getLiveDashboard: async () => {
+      try {
+        return await api.get('/admin/dashboard/live');
+      } catch (error) {
+        console.error('Failed to fetch live dashboard:', error);
+        return {
+          totalUsers: 0,
+          onlineUsers: 0,
+          recentSolves: [],
+          recentActivity: [],
+          eventStatus: { started: false },
+          timestamp: new Date().toISOString(),
+        };
+      }
+    },
+
+    createAnnouncement: async (message: string, type: 'info' | 'warning' | 'success' = 'info') => {
+      try {
+        return await api.post<any>('/admin/announcements', { message, type });
+      } catch (error: any) {
+        return { success: false, message: error.message };
+      }
+    },
+
+    createBackup: async () => {
+      try {
+        return await api.post<any>('/admin/backup');
+      } catch (error: any) {
+        return { success: false, message: error.message };
       }
     },
   },

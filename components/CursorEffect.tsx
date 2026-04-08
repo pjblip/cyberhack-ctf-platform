@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
 
 const CursorEffect: React.FC = () => {
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
   const [isVisible, setIsVisible] = useState(false);
+  const isVisibleRef = useRef(false);
 
   // Smooth spring animation for the trailer
   const springConfig = { damping: 25, stiffness: 700 };
@@ -15,22 +16,28 @@ const CursorEffect: React.FC = () => {
     const moveCursor = (e: MouseEvent) => {
       cursorX.set(e.clientX);
       cursorY.set(e.clientY);
-      if (!isVisible) setIsVisible(true);
+      // Use ref to avoid re-registering on every render
+      if (!isVisibleRef.current) {
+        isVisibleRef.current = true;
+        setIsVisible(true);
+      }
     };
 
-    const handleMouseEnter = () => setIsVisible(true);
-    const handleMouseLeave = () => setIsVisible(false);
+    const handleMouseEnter = () => { isVisibleRef.current = true; setIsVisible(true); };
+    const handleMouseLeave = () => { isVisibleRef.current = false; setIsVisible(false); };
 
-    window.addEventListener('mousemove', moveCursor);
-    document.body.addEventListener('mouseenter', handleMouseEnter);
-    document.body.addEventListener('mouseleave', handleMouseLeave);
+    // IMPORTANT: passive:true lets browser know this handler won't preventDefault()
+    // so the browser can scroll without waiting for JS to return — key for jank-free scrolling
+    window.addEventListener('mousemove', moveCursor, { passive: true });
+    document.body.addEventListener('mouseenter', handleMouseEnter, { passive: true });
+    document.body.addEventListener('mouseleave', handleMouseLeave, { passive: true });
 
     return () => {
       window.removeEventListener('mousemove', moveCursor);
       document.body.removeEventListener('mouseenter', handleMouseEnter);
       document.body.removeEventListener('mouseleave', handleMouseLeave);
     };
-  }, [cursorX, cursorY, isVisible]);
+  }, [cursorX, cursorY]); // removed isVisible from deps — breaks only on mount/unmount
 
   return (
     <>

@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Steganography - Digital Forensics</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #22d3ee;
+            padding: 40px;
+            line-height: 1.8;
+            margin: 0;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(15, 23, 42, 0.95);
+            border: 2px solid #22d3ee;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 0 30px rgba(34, 211, 238, 0.3);
+        }
+        h1 {
+            text-align: center;
+            color: #fbbf24;
+            text-shadow: 0 0 10px rgba(251, 191, 36, 0.8);
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .evidence-box {
+            background: #1e293b;
+            padding: 30px;
+            border-radius: 8px;
+            border: 2px solid #fbbf24;
+            margin: 20px 0;
+        }
+        .image-container {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: #0f172a;
+            border-radius: 8px;
+            border: 1px solid #334155;
+        }
+        .image-container img {
+            max-width: 100%;
+            height: auto;
+            border: 2px solid #22d3ee;
+            border-radius: 5px;
+        }
+        .analysis-tool {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            margin: 20px 0;
+        }
+        .tool-button {
+            padding: 10px 20px;
+            background: #22d3ee;
+            color: #0f172a;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            margin: 5px;
+            transition: all 0.3s;
+        }
+        .tool-button:hover {
+            background: #06b6d4;
+            box-shadow: 0 0 15px rgba(34, 211, 238, 0.5);
+        }
+        .output-box {
+            background: #0f172a;
+            padding: 20px;
+            border-radius: 5px;
+            border: 1px solid #334155;
+            margin-top: 15px;
+            min-height: 60px;
+            color: #10b981;
+            font-size: 13px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            display: none;
+        }
+        .hex-viewer {
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            line-height: 1.4;
+        }
+        .warning {
+            background: #7f1d1d;
+            border: 2px solid #dc2626;
+            padding: 15px;
+            border-radius: 5px;
+            color: #fca5a5;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .info-box {
+            background: #1e293b;
+            border: 2px solid #3b82f6;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .info-box h3 {
+            color: #3b82f6;
+            margin-top: 0;
+        }
+        .info-box ul {
+            color: #94a3b8;
+            margin: 10px 0;
+        }
+        .hint-box {
+            background: #1e293b;
+            border: 2px solid #fbbf24;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .hint-box h3 {
+            color: #fbbf24;
+            margin-top: 0;
+        }
+        .code-block {
+            background: #0f172a;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #22d3ee;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        .code-block code {
+            color: #10b981;
+            font-size: 12px;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #64748b;
+            font-size: 14px;
+        }
+        .success {
+            color: #10b981;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 DIGITAL FORENSICS LAB</h1>
+        <div class="subtitle">Evidence Analysis - Image Steganography Investigation</div>
+
+        <div class="warning">
+            ⚠️ CASE FILE: CONFIDENTIAL - FOR AUTHORIZED PERSONNEL ONLY
+        </div>
+
+        <div class="evidence-box">
+            <h3 style="color: #fbbf24; margin-top: 0;">📋 CASE BRIEFING</h3>
+            <p style="color: #94a3b8;">
+                <strong>Case ID:</strong> DF-2026-0342<br>
+                <strong>Date:</strong> March 16, 2026<br>
+                <strong>Investigator:</strong> You<br>
+                <strong>Evidence Type:</strong> Digital Image
+            </p>
+            <p style="color: #e2e8f0;">
+                We intercepted a suspicious image file from a suspect's computer. 
+                Intelligence suggests the image contains hidden data using steganography techniques.
+                Your mission: Extract the hidden message from this image.
+            </p>
+        </div>
+
+        <div class="image-container">
+            <h4 style="color: #22d3ee;">🖼️ EVIDENCE IMAGE</h4>
+            <canvas id="evidenceCanvas" width="400" height="300" style="border: 2px solid #22d3ee; border-radius: 5px;"></canvas>
+            <p style="color: #64748b; font-size: 12px; margin-top: 10px;">
+                Filename: evidence_photo.png | Size: 120 KB | Format: PNG
+            </p>
+        </div>
+
+        <div class="analysis-tool">
+            <h4 style="color: #22d3ee; margin-top: 0;">🔬 FORENSIC ANALYSIS TOOLS</h4>
+            <p style="color: #94a3b8; font-size: 13px;">Select a tool to analyze the evidence:</p>
+            
+            <button class="tool-button" onclick="analyzeMetadata()">📊 EXIF Metadata</button>
+            <button class="tool-button" onclick="analyzeHex()">🔢 Hex Dump</button>
+            <button class="tool-button" onclick="analyzeLSB()">🔍 LSB Analysis</button>
+            <button class="tool-button" onclick="analyzeStrings()">📝 String Search</button>
+            
+            <div id="analysisOutput" class="output-box"></div>
+        </div>
+
+        <div class="info-box">
+            <h3>🎓 What is Steganography?</h3>
+            <ul>
+                <li><strong>Steganography:</strong> The practice of hiding data within other data</li>
+                <li><strong>LSB (Least Significant Bit):</strong> Hiding data in the least significant bits of pixels</li>
+                <li><strong>Common Techniques:</strong> Embedding in images, audio, video, or text files</li>
+                <li><strong>Detection:</strong> Statistical analysis, visual inspection, or specialized tools</li>
+            </ul>
+        </div>
+
+        <div class="hint-box">
+            <h3>💡 Investigation Hints:</h3>
+            <ul>
+                <li>Images can hide data in multiple ways: metadata, pixel data, or file structure</li>
+                <li>EXIF metadata might contain clues or hidden information</li>
+                <li>Hex dumps can reveal hidden strings or embedded files</li>
+                <li>LSB steganography hides data in the least significant bits of pixels</li>
+                <li>Try all forensic tools to find the hidden message</li>
+            </ul>
+        </div>
+
+        <div class="info-box">
+            <h3>🛠️ Real Forensic Tools:</h3>
+            <div class="code-block">
+                <code>
+# Command-line tools for steganography analysis:
+
+# Extract strings from image
+$ strings evidence.png
+
+# Hex dump analysis
+$ xxd evidence.png | less
+
+# EXIF metadata extraction
+$ exiftool evidence.png
+
+# Steganography detection
+$ stegdetect evidence.png
+
+# LSB extraction
+$ steghide extract -sf evidence.png
+
+# Binwalk (find embedded files)
+$ binwalk evidence.png
+                </code>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <h3>📚 Steganography Techniques:</h3>
+            <ul>
+                <li><strong>LSB Substitution:</strong> Replace least significant bits with hidden data</li>
+                <li><strong>Metadata Hiding:</strong> Store data in EXIF, IPTC, or XMP fields</li>
+                <li><strong>Palette Modification:</strong> Hide data in color palette</li>
+                <li><strong>EOF Appending:</strong> Append data after image end marker</li>
+                <li><strong>Frequency Domain:</strong> Hide in DCT coefficients (JPEG)</li>
+            </ul>
+        </div>
+
+        <div class="footer">
+            <p>━━━━━━━━━━━━━━━━━━━━━━━━━━━━</p>
+            <p>🎓 Gandhinagar University CTF</p>
+            <p>Digital Forensics - Steganography Challenge</p>
+            <p>━━━━━━━━━━━━━━━━━━━━━━━━━━━━</p>
+        </div>
+    </div>
+
+    <script>
+        // Create a simple image with hidden data
+        const canvas = document.getElementById('evidenceCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Draw a simple scene
+        function drawEvidence() {
+            // Sky
+            ctx.fillStyle = '#87CEEB';
+            ctx.fillRect(0, 0, 400, 200);
+            
+            // Ground
+            ctx.fillStyle = '#90EE90';
+            ctx.fillRect(0, 200, 400, 100);
+            
+            // Sun
+            ctx.fillStyle = '#FFD700';
+            ctx.beginPath();
+            ctx.arc(350, 50, 30, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // House
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(150, 150, 100, 100);
+            
+            // Roof
+            ctx.fillStyle = '#DC143C';
+            ctx.beginPath();
+            ctx.moveTo(140, 150);
+            ctx.lineTo(200, 100);
+            ctx.lineTo(260, 150);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Door
+            ctx.fillStyle = '#654321';
+            ctx.fillRect(180, 200, 40, 50);
+            
+            // Window
+            ctx.fillStyle = '#87CEEB';
+            ctx.fillRect(165, 170, 25, 25);
+            ctx.fillRect(210, 170, 25, 25);
+        }
+        
+        drawEvidence();
+        
+        // Forensic analysis functions
+        function analyzeMetadata() {
+            const output = document.getElementById('analysisOutput');
+            output.style.display = 'block';
+            output.innerHTML = `<span style="color: #22d3ee;">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+<span style="color: #fbbf24; font-weight: bold;">📊 EXIF METADATA ANALYSIS</span>
+<span style="color: #22d3ee;">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+
+File Name: evidence_photo.png
+File Type: PNG
+MIME Type: image/png
+Image Width: 400
+Image Height: 300
+Bit Depth: 24
+Color Type: RGB
+Compression: Deflate/Inflate
+Filter: Adaptive
+Interlace: Noninterlaced
+
+<span style="color: #fbbf24;">Custom Metadata Fields:</span>
+Author: Unknown
+Software: Adobe Photoshop CS6
+Creation Date: 2026:03:15 14:23:45
+Comment: Nothing suspicious here...
+
+<span style="color: #64748b;">No obvious hidden data in metadata. Try other analysis methods.</span>`;
+        }
+        
+        function analyzeHex() {
+            const output = document.getElementById('analysisOutput');
+            output.style.display = 'block';
+            output.innerHTML = `<span style="color: #22d3ee;">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+<span style="color: #fbbf24; font-weight: bold;">🔢 HEX DUMP ANALYSIS</span>
+<span style="color: #22d3ee;">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+
+<span style="color: #64748b;">Offset    Hex                                              ASCII</span>
+00000000: 89 50 4e 47 0d 0a 1a 0a 00 00 00 0d 49 48 44 52  .PNG........IHDR
+00000010: 00 00 01 90 00 00 01 2c 08 02 00 00 00 a3 4f 7c  .......,.....O|
+00000020: 3d 00 00 00 09 70 48 59 73 00 00 0b 13 00 00 0b  =....pHYs.......
+00000030: 13 01 00 9a 9c 18 00 00 0a 4f 69 43 43 50 50 68  .........OiCCPPh
+...
+<span style="color: #fbbf24;">[Scanning for embedded strings...]</span>
+
+000f4a20: 48 69 64 64 65 6e 20 44 61 74 61 3a 20 66 6c 61  Hidden Data: fla
+000f4a30: 67 7b 73 74 33 67 30 5f 31 6e 5f 70 6c 34 31 6e  g{st3g0_1n_pl41n
+000f4a40: 5f 73 31 67 68 74 7d 00 00 00 00 00 00 00 00 00  _s1ght}.........
+
+<span style="color: #10b981; font-weight: bold;">🎉 HIDDEN DATA FOUND!</span>
+
+<span style="color: #22d3ee;">Extracted String:</span> "Hidden Data: flag{st3g0_1n_pl41n_s1ght}"
+
+<span style="color: #fbbf24;">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+<span style="color: #10b981; font-size: 16px; font-weight: bold;">FLAG: flag{st3g0_1n_pl41n_s1ght}</span>
+<span style="color: #fbbf24;">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+
+<span style="color: #94a3b8;">Analysis: The flag was hidden in plain sight within the image file data.
+This is a simple steganography technique where data is appended to the image.</span>`;
+        }
+        
+        function analyzeLSB() {
+            const output = document.getElementById('analysisOutput');
+            output.style.display = 'block';
+            output.innerHTML = `<span style="color: #22d3ee;">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+<span style="color: #fbbf24; font-weight: bold;">🔍 LSB (LEAST SIGNIFICANT BIT) ANALYSIS</span>
+<span style="color: #22d3ee;">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+
+<span style="color: #64748b;">Analyzing pixel data for LSB patterns...</span>
+
+Pixel[0,0]: RGB(135, 206, 235) → LSB: 1,0,1
+Pixel[0,1]: RGB(135, 206, 235) → LSB: 1,0,1
+Pixel[0,2]: RGB(135, 206, 235) → LSB: 1,0,1
+...
+
+<span style="color: #fbbf24;">Statistical Analysis:</span>
+- LSB randomness: 49.8% (expected: 50%)
+- Chi-square test: 0.98 (no significant deviation)
+- Visual analysis: No visible artifacts
+
+<span style="color: #64748b;">Result: No LSB steganography detected in this image.
+The data might be hidden using a different technique.</span>`;
+        }
+        
+        function analyzeStrings() {
+            const output = document.getElementById('analysisOutput');
+            output.style.display = 'block';
+            output.innerHTML = `<span style="color: #22d3ee;">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+<span style="color: #fbbf24; font-weight: bold;">📝 STRING SEARCH ANALYSIS</span>
+<span style="color: #22d3ee;">━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+
+<span style="color: #64748b;">Extracting readable strings from image data...</span>
+
+Found strings:
+- "PNG"
+- "IHDR"
+- "pHYs"
+- "iCCPPhotoshop ICC profile"
+- "Adobe Photoshop CS6"
+- "Nothing suspicious here..."
+- "IDAT"
+- "IEND"
+
+<span style="color: #64748b;">No obvious flag found in string analysis.
+Try hex dump for deeper inspection.</span>`;
+        }
+    </script>
+</body>
+</html>

@@ -65,8 +65,8 @@ export class AdminSeedService implements OnModuleInit {
             { id: uuidv4(), title: 'Web Recon', description: 'Analyze the HTTP headers of the target server.', difficulty: 'easy', points: 10, flag: 'flag{w3b_r3c0n_succ3ss}', isActive: true, duration: 180, fileUrl: '/challenges/web-recon.txt' },
             { id: uuidv4(), title: 'Base64 Decoder', description: 'Decode this hidden message: ZmxhZ3tiYXNlNjRfaXNfZWFzeX0=', difficulty: 'easy', points: 10, flag: 'flag{base64_is_easy}', isActive: true, duration: 180, fileUrl: '/challenges/base64-decoder.txt' },
             { id: uuidv4(), title: 'Hidden Comments', description: 'Inspect the page source to find the developer\'s secret comment.', difficulty: 'easy', points: 10, flag: 'flag{h1dd3n_c0mm3nts_s33n}', isActive: true, duration: 180, fileUrl: '/challenges/hidden-comments.html' },
-            { id: uuidv4(), title: 'Robots Protocol', description: 'Check where bots are not allowed to go.', difficulty: 'easy', points: 10, flag: 'flag{r0b0ts_txt_r34d}', isActive: true, duration: 180, fileUrl: '/challenges/robots.txt' },
-            { id: uuidv4(), title: 'Cookie Tampering', description: 'Change your role from user to admin in the cookie.', difficulty: 'easy', points: 10, flag: 'flag{c00k13_m0nst3r}', isActive: true, duration: 180, fileUrl: '/challenges/cookie-tampering.txt' },
+            { id: uuidv4(), title: 'Robots Protocol', description: 'Check where bots are not allowed to go.', difficulty: 'easy', points: 10, flag: 'flag{r0b0ts_txt_r34d}', isActive: true, duration: 180, fileUrl: '/challenge-files/robots-protocol.html' },
+            { id: uuidv4(), title: 'Cookie Tampering', description: 'Change your role from user to admin in the cookie.', difficulty: 'easy', points: 10, flag: 'flag{c00k13_m0nst3r}', isActive: true, duration: 180, fileUrl: '/challenge-files/cookie-tampering.html' },
 
             // 4 Medium (Operative)
             { id: uuidv4(), title: 'SQL Injection 101', description: 'Bypass the login prompt using classic SQL injection.', difficulty: 'medium', points: 50, flag: 'flag{sql1_byp4ss_m4st3r}', isActive: true },
@@ -75,7 +75,25 @@ export class AdminSeedService implements OnModuleInit {
             { id: uuidv4(), title: 'Buffer Overflow Entry', description: 'Overwrite the return address to call the flag function.', difficulty: 'medium', points: 50, flag: 'flag{b0f_c0ntr0ll3d}', isActive: true },
 
             // 1 Hard (Black Ops)
-            { id: uuidv4(), title: 'Zero Day Research', description: 'Exploit the prototype pollution vulnerability in the NodeJS service to execute Remote Code.', difficulty: 'hard', points: 250, flag: 'flag{pr0t0_p0llut10n_rce_v3ry_n1c3}', isActive: true },
+            { 
+                id: uuidv4(), 
+                title: 'Ransomware Reversal', 
+                description: 'DarkNet ransomware encrypted our database. We recovered the encryption script from memory. Analyze the multi-layer encryption algorithm and write a decryption script to recover the flag.', 
+                difficulty: 'hard', 
+                points: 250, 
+                flag: 'flag{r3v3rs3_3ng1n33r1ng_m4st3r}', 
+                isActive: true, 
+                duration: 900, 
+                fileUrl: '/challenge-files/ransomware-reversal.html',
+                hints: [
+                    'The encryption uses 3 layers. You must reverse them in opposite order: Layer 3 → Layer 2 → Layer 1',
+                    'XOR is its own inverse. The key "D4RKN3T" is visible in the encryption script. Use it to undo both XOR operations.',
+                    'Layer 2 uses addition (byte + position) mod 256. Reverse it with subtraction: (byte - position) mod 256. In Python: (byte - i) % 256'
+                ],
+                hintCosts: [5, 10, 15],
+                estimatedTime: 25
+            },
+
         ];
 
         try {

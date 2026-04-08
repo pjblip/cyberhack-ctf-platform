@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Injection 101 - CTF Challenge</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #22d3ee;
+            padding: 40px;
+            line-height: 1.8;
+        }
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            background: rgba(15, 23, 42, 0.95);
+            border: 2px solid #22d3ee;
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 0 30px rgba(34, 211, 238, 0.3);
+        }
+        h1 {
+            text-align: center;
+            color: #fbbf24;
+            text-shadow: 0 0 10px rgba(251, 191, 36, 0.8);
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #64748b;
+            margin-bottom: 30px;
+        }
+        .login-form {
+            background: #1e293b;
+            padding: 30px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            margin: 20px 0;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            color: #22d3ee;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 5px;
+            color: #22d3ee;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        input:focus {
+            outline: none;
+            border-color: #22d3ee;
+            box-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #22d3ee;
+            color: #0f172a;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #06b6d4;
+            box-shadow: 0 0 20px rgba(34, 211, 238, 0.5);
+        }
+        .code-block {
+            background: #0f172a;
+            padding: 20px;
+            border-radius: 5px;
+            border-left: 4px solid #ef4444;
+            margin: 20px 0;
+            overflow-x: auto;
+        }
+        .code-block pre {
+            margin: 0;
+            color: #10b981;
+            font-size: 13px;
+        }
+        .warning {
+            background: #7f1d1d;
+            border: 2px solid #dc2626;
+            padding: 15px;
+            border-radius: 5px;
+            color: #fca5a5;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .hint-box {
+            background: #1e293b;
+            border: 2px solid #fbbf24;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .hint-box h3 {
+            color: #fbbf24;
+            margin-top: 0;
+        }
+        .hint-box ul {
+            color: #94a3b8;
+            margin: 10px 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #64748b;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 SECURE LOGIN PORTAL</h1>
+        <div class="subtitle">Admin Access Required</div>
+
+        <div class="warning">
+            ⚠️ WARNING: This is a vulnerable login system for educational purposes only!
+        </div>
+
+        <div class="login-form">
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="username">👤 Username:</label>
+                    <input type="text" id="username" name="username" placeholder="Enter username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">🔑 Password:</label>
+                    <input type="password" id="password" name="password" placeholder="Enter password" required>
+                </div>
+                <button type="submit">LOGIN</button>
+            </form>
+        </div>
+
+        <div class="code-block">
+            <strong style="color: #ef4444;">⚠️ VULNERABLE BACKEND CODE:</strong>
+            <pre>
+// PHP Backend (Vulnerable!)
+$username = $_POST['username'];
+$password = $_POST['password'];
+
+$query = "SELECT * FROM users 
+          WHERE username = '$username' 
+          AND password = '$password'";
+
+$result = mysqli_query($conn, $query);
+
+if (mysqli_num_rows($result) > 0) {
+    echo "Login successful! Flag: flag{sql1_byp4ss_m4st3r}";
+} else {
+    echo "Invalid credentials";
+}
+            </pre>
+        </div>
+
+        <div class="hint-box">
+            <h3>📚 What You're Learning:</h3>
+            <ul>
+                <li><strong>SQL Injection:</strong> Exploiting unsanitized database queries</li>
+                <li><strong>Input Validation:</strong> Why user input should never be trusted</li>
+                <li><strong>Parameterized Queries:</strong> The proper way to prevent SQL injection</li>
+                <li><strong>Authentication Bypass:</strong> How attackers gain unauthorized access</li>
+            </ul>
+        </div>
+
+        <div class="code-block">
+            <strong style="color: #10b981;">✅ SECURE CODE (How it should be):</strong>
+            <pre>
+// Secure version using prepared statements
+$stmt = $conn->prepare("SELECT * FROM users 
+                        WHERE username = ? AND password = ?");
+$stmt->bind_param("ss", $username, $password);
+$stmt->execute();
+$result = $stmt->get_result();
+            </pre>
+        </div>
+
+        <div class="footer">
+            <p>━━━━━━━━━━━━━━━━━━━━━━━━━━━━</p>
+            <p>🎓 Gandhinagar University CTF</p>
+            <p>SQL Injection 101 Challenge</p>
+            <p>━━━━━━━━━━━━━━━━━━━━━━━━━━━━</p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // Simulate SQL injection vulnerability
+            const sqlQuery = `SELECT * FROM users WHERE username = '${username}' AND password = '${password}'`;
+            
+            console.log('Executed Query:', sqlQuery);
+
+            // Check for SQL injection patterns
+            if (username.includes("'") || username.toLowerCase().includes("or") || 
+                username.includes("--") || username.includes("#")) {
+                alert('🎉 SQL INJECTION SUCCESSFUL!\n\nYou bypassed authentication!\n\nFlag: flag{sql1_byp4ss_m4st3r}\n\nExecuted Query:\n' + sqlQuery);
+            } else {
+                alert('❌ Invalid credentials\n\nTry using SQL injection techniques!');
+            }
+        });
+    </script>
+</body>
+</html>

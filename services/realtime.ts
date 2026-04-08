@@ -1,6 +1,10 @@
 // Real-time Service using Server-Sent Events (SSE) from NestJS backend
 
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+// Determine the backend URL for SSE. Vite proxy isn't reliable for SSE streaming,
+// so we bypass it and connect directly to the backend port (3001) on the same host.
+const SSE_BASE = typeof window !== 'undefined'
+  ? `http://${window.location.hostname}:3001`
+  : 'http://localhost:3001';
 
 // Types
 export interface SolveNotification {
@@ -53,7 +57,7 @@ class RealtimeManager {
     }
 
     // EventSource doesn't support custom headers, so pass token as query param
-    this.eventSource = new EventSource(`${API_BASE}/events/stream?token=${token}`);
+    this.eventSource = new EventSource(`${SSE_BASE}/events/stream?token=${token}`);
 
     this.eventSource.onmessage = (event) => {
       try {

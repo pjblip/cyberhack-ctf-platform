@@ -11,10 +11,12 @@ import { Team } from './entities/team.entity';
 import { Event } from './entities/event.entity';
 import { FirstBlood } from './entities/first-blood.entity';
 import { HintUsage } from './entities/hint-usage.entity';
+import { UserProgress } from './entities/user-progress.entity';
 import { Submission } from './entities/submission.entity';
 import { Ban } from './entities/ban.entity';
 import { Announcement } from './entities/announcement.entity';
 import { EventState } from './entities/event-state.entity';
+import { Lockout } from './entities/lockout.entity';
 
 @Module({
     imports: [
@@ -26,8 +28,8 @@ import { EventState } from './entities/event-state.entity';
                 database: config.get<string>('DB_PATH', './cyberhack.db'),
                 entities: [
                     User, Challenge, Solve, ChallengeAttempt, ActivityLog, Category,
-                    Team, Event, FirstBlood, HintUsage, Submission, Ban, Announcement,
-                    EventState
+                    Team, Event, FirstBlood, HintUsage, UserProgress, Submission, Ban, Announcement,
+                    EventState, Lockout
                 ],
                 synchronize: true,   // Auto-creates tables on first run — no migrations needed
                 logging: false,
@@ -35,8 +37,8 @@ import { EventState } from './entities/event-state.entity';
         }),
         TypeOrmModule.forFeature([
             User, Challenge, Solve, ChallengeAttempt, ActivityLog, Category,
-            Team, Event, FirstBlood, HintUsage, Submission, Ban, Announcement,
-            EventState
+            Team, Event, FirstBlood, HintUsage, UserProgress, Submission, Ban, Announcement,
+            EventState, Lockout
         ]),
     ],
     exports: [TypeOrmModule],

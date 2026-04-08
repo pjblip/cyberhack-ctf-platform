@@ -29,15 +29,15 @@ export class Submission {
     @CreateDateColumn({ name: 'submitted_at' })
     submittedAt: Date;
 
-    @ManyToOne(() => User)
+    @ManyToOne(() => User, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'user_id' })
     user: User;
 
-    @ManyToOne(() => Team, { nullable: true })
+    @ManyToOne(() => Team, { nullable: true, onDelete: 'SET NULL' })
     @JoinColumn({ name: 'team_id' })
     team: Team;
 
-    @ManyToOne(() => Challenge)
+    @ManyToOne(() => Challenge, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'challenge_id' })
     challenge: Challenge;
 }

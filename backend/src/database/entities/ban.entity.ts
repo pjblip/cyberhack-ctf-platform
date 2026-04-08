@@ -21,7 +21,7 @@ export class Ban {
     @Column({ name: 'expires_at', nullable: true })
     expiresAt: Date;
 
-    @ManyToOne(() => User)
+    @ManyToOne(() => User, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'user_id' })
     user: User;
 }

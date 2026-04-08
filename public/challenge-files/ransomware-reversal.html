@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔒 Ransomware Reversal - Hard Challenge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #1a0000 0%, #330000 100%);
+            color: #ff3333;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #ff0000;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 30px rgba(255, 0, 0, 0.3);
+        }
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #ff0000;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .skull {
+            font-size: 60px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        h1 {
+            color: #ff0000;
+            text-shadow: 0 0 10px #ff0000;
+            margin: 10px 0;
+        }
+        .warning {
+            background: rgba(255, 0, 0, 0.1);
+            border-left: 4px solid #ff0000;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .section {
+            margin: 25px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 5px;
+        }
+        .section h2 {
+            color: #ff6666;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #ff3333;
+            padding-bottom: 10px;
+        }
+        .code-block {
+            background: #000;
+            border: 1px solid #ff0000;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        .encrypted-data {
+            color: #00ff00;
+            word-break: break-all;
+            line-height: 1.6;
+        }
+        .download-btn {
+            display: inline-block;
+            background: #ff0000;
+            color: #fff;
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 10px 10px 10px 0;
+            transition: all 0.3s;
+            border: 2px solid #ff0000;
+        }
+        .download-btn:hover {
+            background: #cc0000;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+        }
+        .steps {
+            list-style: none;
+            counter-reset: step-counter;
+        }
+        .steps li {
+            counter-increment: step-counter;
+            margin: 15px 0;
+            padding-left: 40px;
+            position: relative;
+        }
+        .steps li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: #ff0000;
+            color: #fff;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .hint-box {
+            background: rgba(255, 255, 0, 0.1);
+            border: 1px solid #ffaa00;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .hint-box h3 {
+            color: #ffaa00;
+            margin-bottom: 10px;
+        }
+        .technical-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 15px 0;
+        }
+        .detail-item {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-left: 3px solid #ff3333;
+        }
+        .detail-label {
+            color: #ff6666;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        @media (max-width: 768px) {
+            .technical-details {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="skull">☠️</div>
+            <h1>🔒 DARKNET RANSOMWARE v2.3 🔒</h1>
+            <p style="color: #ff6666; margin-top: 10px;">Your Critical Database Has Been Encrypted</p>
+        </div>
+
+        <div class="warning">
+            <strong>⚠️ INCIDENT REPORT:</strong><br>
+            On March 15, 2026 at 03:42:17 UTC, our production database was compromised by the DarkNet ransomware group. 
+            They encrypted our critical flag database using a custom multi-layer encryption algorithm. 
+            Fortunately, our incident response team recovered the encryption script from memory before the attackers wiped it.
+        </div>
+
+        <div class="section">
+            <h2>📋 Your Mission</h2>
+            <p>As our lead security researcher, you must:</p>
+            <ul class="steps">
+                <li>Download and analyze the encryption script (<code>ransomware-encrypt.py</code>)</li>
+                <li>Understand the three-layer encryption algorithm</li>
+                <li>Write a decryption script to reverse the process</li>
+                <li>Decrypt the encrypted data to recover the flag</li>
+                <li>Submit the flag to prove you've broken the encryption</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>🔐 Encrypted Data</h2>
+            <p>This is the encrypted flag from our database:</p>
+            <div class="code-block">
+                <div class="encrypted-data">766a7b646b72296d3c6709da4c306c513d7ddd277ede4302676e15061817701e</div>
+            </div>
+            <p style="margin-top: 10px; color: #ff6666;">
+                <strong>Format:</strong> Hexadecimal (64 characters = 32 bytes)
+            </p>
+        </div>
+
+        <div class="section">
+            <h2>🛠️ Technical Details</h2>
+            <div class="technical-details">
+                <div class="detail-item">
+                    <div class="detail-label">Encryption Algorithm:</div>
+                    Multi-Layer XOR + Shift Cipher
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Key Length:</div>
+                    7 bytes (visible in script)
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Encryption Layers:</div>
+                    3 layers (must reverse in order)
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Original Data Length:</div>
+                    32 bytes
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📥 Download Files</h2>
+            <button onclick="downloadEncryptionScript()" class="download-btn">
+                📄 Download Encryption Script
+            </button>
+            <button onclick="downloadEncryptedData()" class="download-btn">
+                🔒 Download Encrypted Data
+            </button>
+        </div>
+        
+        <script>
+        function downloadEncryptionScript() {
+            const content = `#!/usr/bin/env python3
+"""
+🔒 DARKNET RANSOMWARE v2.3 🔒
+Your files have been encrypted!
+
+This is the encryption algorithm we used.
+Good luck reversing it... if you can.
+
+- DarkNet Crew
+"""
+
+import sys
+
+def encrypt_data(plaintext, key):
+    """
+    Multi-layer encryption algorithm
+    Layer 1: XOR with rotating key
+    Layer 2: Byte shifting
+    Layer 3: XOR with key again
+    """
+    encrypted = bytearray()
+    
+    # Layer 1: XOR with rotating key
+    for i, byte in enumerate(plaintext):
+        xor_key = key[i % len(key)]
+        encrypted.append(byte ^ xor_key)
+    
+    # Layer 2: Shift each byte by its position
+    shifted = bytearray()
+    for i, byte in enumerate(encrypted):
+        shifted.append((byte + i) % 256)
+    
+    # Layer 3: XOR with reversed key
+    final = bytearray()
+    reversed_key = key[::-1]
+    for i, byte in enumerate(shifted):
+        xor_key = reversed_key[i % len(reversed_key)]
+        final.append(byte ^ xor_key)
+    
+    return final
+
+def main():
+    # Our secret encryption key (hardcoded for "security")
+    ENCRYPTION_KEY = b"D4RKN3T"
+    
+    # The original flag (now encrypted)
+    original_flag = b"flag{r3v3rs3_3ng1n33r1ng_m4st3r}"
+    
+    # Encrypt the flag
+    encrypted_flag = encrypt_data(original_flag, ENCRYPTION_KEY)
+    
+    # Convert to hex for storage
+    hex_encrypted = encrypted_flag.hex()
+    
+    print("=" * 60)
+    print("🔒 DARKNET RANSOMWARE - ENCRYPTION COMPLETE 🔒")
+    print("=" * 60)
+    print(f"\\nOriginal data length: {len(original_flag)} bytes")
+    print(f"Encrypted data length: {len(encrypted_flag)} bytes")
+    print(f"\\nEncrypted data (hex):")
+    print(hex_encrypted)
+    print("\\n" + "=" * 60)
+    print("Your files are now encrypted!")
+    print("To decrypt, you must understand our algorithm...")
+    print("=" * 60)
+
+if __name__ == "__main__":
+    main()
+`;
+            downloadFile('ransomware-encrypt.py', content);
+        }
+        
+        function downloadEncryptedData() {
+            const content = `🔒 DARKNET RANSOMWARE v2.3 🔒
+================================
+
+Your critical database has been encrypted!
+
+Encryption Algorithm: Multi-Layer XOR + Shift Cipher
+Encryption Key: [REDACTED]
+Timestamp: 2026-03-15 03:42:17 UTC
+
+================================
+ENCRYPTED DATA (HEX):
+================================
+
+766a7b646b72296d3c6709da4c306c513d7ddd277ede4302676e15061817701e
+
+================================
+RECOVERY INSTRUCTIONS:
+================================
+
+We have provided you with our encryption script: ransomware-encrypt.py
+
+Study the algorithm carefully. You must:
+1. Understand the three-layer encryption process
+2. Reverse each layer in the correct order
+3. Write your own decryption script
+4. Decrypt the hex data above to recover the flag
+
+Hint: Encryption is reversible if you understand the mathematics.
+XOR is its own inverse: A XOR B XOR B = A
+Shifting can be reversed by subtracting instead of adding.
+
+Good luck, security researcher.
+
+- DarkNet Crew
+
+================================
+TECHNICAL DETAILS:
+================================
+
+Encryption Layers:
+1. XOR with rotating key
+2. Byte position shifting (modulo 256)
+3. XOR with reversed key
+
+Key Length: 7 bytes
+Key Pattern: Alphanumeric with numbers
+
+================================
+`;
+            downloadFile('encrypted_flag.txt', content);
+        }
+        
+        function downloadFile(filename, content) {
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
+        </script>
+
+        <div class="hint-box">
+            <h3>💡 Cryptography Hints</h3>
+            <p><strong>XOR Properties:</strong> XOR is its own inverse. If A XOR B = C, then C XOR B = A</p>
+            <p><strong>Reversing Operations:</strong> Addition can be reversed by subtraction. If (X + Y) mod 256 = Z, then (Z - Y) mod 256 = X</p>
+            <p><strong>Layer Order:</strong> Decryption must reverse the layers in opposite order: Layer 3 → Layer 2 → Layer 1</p>
+        </div>
+
+        <div class="section">
+            <h2>🎯 What You Need to Know</h2>
+            <div class="code-block">
+<pre style="color: #00ff00;">
+# Encryption Process (from the script):
+1. XOR each byte with rotating key
+2. Shift each byte by its position (add position mod 256)
+3. XOR again with reversed key
+
+# Your Decryption Process (reverse order):
+1. XOR with reversed key (undo layer 3)
+2. Subtract position from each byte (undo layer 2)
+3. XOR with rotating key (undo layer 1)
+</pre>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🐍 Decryption Template</h2>
+            <p>Here's a starting template for your decryption script:</p>
+            <div class="code-block">
+<pre style="color: #00ff00;">#!/usr/bin/env python3
+
+def decrypt_data(encrypted_hex, key):
+    # Convert hex to bytes
+    encrypted = bytes.fromhex(encrypted_hex)
+    
+    # TODO: Reverse Layer 3 (XOR with reversed key)
+    # TODO: Reverse Layer 2 (subtract position)
+    # TODO: Reverse Layer 1 (XOR with rotating key)
+    
+    return decrypted
+
+# The encrypted data
+encrypted_hex = "766a7b646b72296d3c6709da4c306c513d7ddd277ede4302676e15061817701e"
+
+# The key (from the encryption script)
+key = b"D4RKN3T"
+
+# Decrypt and print
+flag = decrypt_data(encrypted_hex, key)
+print(flag.decode())
+</pre>
+            </div>
+        </div>
+
+        <div class="warning">
+            <strong>🎓 Learning Objectives:</strong><br>
+            • Understanding symmetric encryption algorithms<br>
+            • Reverse engineering cryptographic operations<br>
+            • Python scripting for security analysis<br>
+            • XOR cipher properties and weaknesses<br>
+            • Byte manipulation and modular arithmetic
+        </div>
+
+        <div class="section" style="text-align: center; margin-top: 30px;">
+            <p style="color: #ff6666; font-size: 18px;">
+                <strong>Good luck, Security Researcher!</strong>
+            </p>
+            <p style="margin-top: 10px;">
+                Once you decrypt the data, submit the flag in the format: <code>flag{...}</code>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

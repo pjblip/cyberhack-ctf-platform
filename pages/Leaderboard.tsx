@@ -19,10 +19,10 @@ const LeaderboardPage: React.FC<LeaderboardProps> = ({ currentUser }) => {
   const fetchLeaderboard = async () => {
     setIsLoading(true);
     const data = await db.leaderboard.get();
-    
+
     // Sort logic just in case backend didn't sort
     data.sort((a: any, b: any) => b.points - a.points);
-    
+
     setLeaderboardData(data);
     setIsLoading(false);
   };
@@ -49,8 +49,8 @@ const LeaderboardPage: React.FC<LeaderboardProps> = ({ currentUser }) => {
           </div>
         </div>
 
-        <RealtimeLeaderboard 
-          initialData={leaderboardData} 
+        <RealtimeLeaderboard
+          initialData={leaderboardData}
           currentUserId={currentUser?.id}
         />
       </div>
@@ -85,12 +85,12 @@ const LeaderboardPage: React.FC<LeaderboardProps> = ({ currentUser }) => {
           Global Leaderboard
         </h2>
         <div className="flex items-center justify-center gap-3 text-slate-400">
-           <p className="font-mono text-sm">ELITE OPERATIVES RANKING</p>
-           {db.isLive && (
-             <span className="flex items-center text-[10px] font-bold text-red-400 bg-red-950/40 px-2 py-0.5 rounded border border-red-500/30 animate-pulse tracking-wider">
-               <Activity className="w-3 h-3 mr-1" /> LIVE
-             </span>
-           )}
+          <p className="font-mono text-sm">ELITE OPERATIVES RANKING</p>
+          {db.isLive && (
+            <span className="flex items-center text-[10px] font-bold text-red-400 bg-red-950/40 px-2 py-0.5 rounded border border-red-500/30 animate-pulse tracking-wider">
+              <Activity className="w-3 h-3 mr-1" /> LIVE
+            </span>
+          )}
         </div>
       </div>
 
@@ -106,91 +106,85 @@ const LeaderboardPage: React.FC<LeaderboardProps> = ({ currentUser }) => {
           </thead>
           <tbody className="divide-y divide-slate-800/50">
             <AnimatePresence>
-                {leaderboardData.length === 0 ? (
-                    <tr>
-                        <td colSpan={4} className="p-12 text-center text-slate-500 italic">
-                            No active operatives detected.
-                        </td>
-                    </tr>
-                ) : (
-                    leaderboardData.map((user, index) => {
-                    const isCurrentUser = currentUser?.username === user.username;
-                    const rank = index + 1;
-                    
-                    let RankIcon = null;
-                    if (rank === 1) RankIcon = <Crown className="w-6 h-6 text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.6)]" />;
-                    else if (rank === 2) RankIcon = <Medal className="w-6 h-6 text-slate-300 drop-shadow-[0_0_8px_rgba(203,213,225,0.4)]" />;
-                    else if (rank === 3) RankIcon = <Medal className="w-6 h-6 text-amber-600 drop-shadow-[0_0_8px_rgba(217,119,6,0.4)]" />;
+              {leaderboardData.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="p-12 text-center text-slate-500 italic">
+                    No active operatives detected.
+                  </td>
+                </tr>
+              ) : (
+                leaderboardData.map((user, index) => {
+                  const isCurrentUser = currentUser?.username === user.username;
+                  const rank = index + 1;
 
-                    return (
-                        <MotionTr 
-                        layout
-                        key={user.id || index}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: 20 }}
-                        transition={{ duration: 0.3, delay: index * 0.05 }}
-                        className={`
+                  let RankIcon = null;
+                  if (rank === 1) RankIcon = <Crown className="w-6 h-6 text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.6)]" />;
+                  else if (rank === 2) RankIcon = <Medal className="w-6 h-6 text-slate-300 drop-shadow-[0_0_8px_rgba(203,213,225,0.4)]" />;
+                  else if (rank === 3) RankIcon = <Medal className="w-6 h-6 text-amber-600 drop-shadow-[0_0_8px_rgba(217,119,6,0.4)]" />;
+
+                  return (
+                    <MotionTr
+                      layout
+                      key={user.id || index}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 20 }}
+                      transition={{ duration: 0.3, delay: index * 0.05 }}
+                      className={`
                             relative
                             transition-all duration-300
-                            ${isCurrentUser 
-                                ? 'bg-cyan-950/30 shadow-[inset_0_0_20px_rgba(6,182,212,0.1)] z-10' 
-                                : 'hover:bg-slate-800/40'}
+                            ${isCurrentUser
+                          ? 'bg-cyan-950/30 shadow-[inset_0_0_20px_rgba(6,182,212,0.1),inset_4px_0_0_#22d3ee] z-10'
+                          : 'hover:bg-slate-800/40'}
                         `}
-                        >
-                        {/* Highlighting border for current user */}
-                        {isCurrentUser && (
-                            <td className="absolute inset-y-0 left-0 w-1 bg-cyan-400 shadow-[0_0_10px_#22d3ee]"></td>
-                        )}
-
-                        <td className="p-6 text-center">
-                            <div className="flex justify-center items-center">
-                            {RankIcon ? (
-                                <div className="scale-110 transform transition-transform hover:scale-125">{RankIcon}</div>
-                            ) : (
-                                <span className="text-slate-500 font-mono font-bold">#{rank.toString().padStart(2, '0')}</span>
-                            )}
-                            </div>
-                        </td>
-                        <td className="p-6">
-                            <div className="flex items-center">
-                            <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-4 shadow-lg ${
-                                isCurrentUser 
-                                ? 'bg-gradient-to-br from-cyan-600 to-blue-600 text-white shadow-cyan-500/20' 
-                                : 'bg-slate-800 text-slate-500'
+                    >
+                      {/* Cyan left-border highlight rendered via box-shadow on the tr */}
+                      <td className="p-6 text-center">
+                        <div className="flex justify-center items-center">
+                          {RankIcon ? (
+                            <div className="scale-110 transform transition-transform hover:scale-125">{RankIcon}</div>
+                          ) : (
+                            <span className="text-slate-500 font-mono font-bold">#{rank.toString().padStart(2, '0')}</span>
+                          )}
+                        </div>
+                      </td>
+                      <td className="p-6">
+                        <div className="flex items-center">
+                          <div className={`w-10 h-10 rounded-lg flex items-center justify-center mr-4 shadow-lg ${isCurrentUser
+                            ? 'bg-gradient-to-br from-cyan-600 to-blue-600 text-white shadow-cyan-500/20'
+                            : 'bg-slate-800 text-slate-500'
                             }`}>
-                                <UserIcon className="w-5 h-5" />
-                            </div>
-                            <div className="flex flex-col">
-                                <span className={`font-bold tracking-tight text-lg ${
-                                    isCurrentUser ? 'text-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.4)]' : 'text-slate-200'
-                                }`}>
-                                {user.username}
-                                </span>
-                                {isCurrentUser && (
-                                    <span className="text-[10px] text-cyan-600 font-mono uppercase tracking-widest font-bold">
-                                        Current Session
-                                    </span>
-                                )}
-                            </div>
-                            </div>
-                        </td>
-                        <td className="p-6 text-right hidden sm:table-cell">
-                             <div className="inline-flex items-center bg-slate-800/50 px-3 py-1 rounded-full border border-slate-700/50">
-                                <Target className="w-3 h-3 text-emerald-400 mr-2" />
-                                <span className="font-mono text-emerald-400 font-bold">{user.correct}</span>
-                             </div>
-                        </td>
-                        <td className="p-6 text-right">
-                            <div className={`font-mono text-xl font-bold ${rank === 1 ? 'text-yellow-400' : 'text-white'}`}>
-                            {user.points.toLocaleString()}
-                            <span className="text-xs text-slate-500 ml-1">PTS</span>
-                            </div>
-                        </td>
-                        </MotionTr>
-                    );
-                    })
-                )}
+                            <UserIcon className="w-5 h-5" />
+                          </div>
+                          <div className="flex flex-col">
+                            <span className={`font-bold tracking-tight text-lg ${isCurrentUser ? 'text-cyan-400 drop-shadow-[0_0_5px_rgba(34,211,238,0.4)]' : 'text-slate-200'
+                              }`}>
+                              {user.username}
+                            </span>
+                            {isCurrentUser && (
+                              <span className="text-[10px] text-cyan-600 font-mono uppercase tracking-widest font-bold">
+                                Current Session
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="p-6 text-right hidden sm:table-cell">
+                        <div className="inline-flex items-center bg-slate-800/50 px-3 py-1 rounded-full border border-slate-700/50">
+                          <Target className="w-3 h-3 text-emerald-400 mr-2" />
+                          <span className="font-mono text-emerald-400 font-bold">{user.correct}</span>
+                        </div>
+                      </td>
+                      <td className="p-6 text-right">
+                        <div className={`font-mono text-xl font-bold ${rank === 1 ? 'text-yellow-400' : 'text-white'}`}>
+                          {user.points.toLocaleString()}
+                          <span className="text-xs text-slate-500 ml-1">PTS</span>
+                        </div>
+                      </td>
+                    </MotionTr>
+                  );
+                })
+              )}
             </AnimatePresence>
           </tbody>
         </table>

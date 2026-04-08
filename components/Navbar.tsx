@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Shield, Trophy, Target, LogOut, User as UserIcon, Wifi, Menu, X, Volume2, VolumeX, LayoutDashboard } from 'lucide-react';
+import { Shield, Trophy, Target, LogOut, User as UserIcon, Wifi, Menu, X, Volume2, VolumeX, BookOpen } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Stats } from '../types';
 import { playHoverSound, playClickSound, toggleAudio, getAudioStatus } from '../utils/audio';
@@ -97,7 +97,13 @@ const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate, userStats, isL
             <div className="hidden lg:block">
               <EventCountdown
                 eventDuration={60}
-                eventStartTime={Date.now() - (10 * 60 * 1000)} // Example: started 10 mins ago
+                eventStartTime={(() => {
+                  const stored = localStorage.getItem('cyberhack_event_start');
+                  if (stored) return parseInt(stored);
+                  const now = Date.now();
+                  localStorage.setItem('cyberhack_event_start', now.toString());
+                  return now;
+                })()}
               />
             </div>
           </div>
@@ -106,7 +112,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate, userStats, isL
           <div className="hidden md:flex items-center space-x-2">
             {!isAdmin && <NavItem page="/" label="Home" />}
             {!isAdmin && <NavItem page="/challenges" label="Challenges" icon={Target} />}
-            {!isAdmin && <NavItem page="/files" label="Files" icon={LayoutDashboard} />}
+            {!isAdmin && <NavItem page="/resources" label="Training" icon={BookOpen} />}
             {isAdmin && <NavItem page="/admin" label="Admin Panel" icon={Shield} danger />}
           </div>
 
@@ -185,7 +191,7 @@ const Navbar: React.FC<NavbarProps> = ({ currentPage, onNavigate, userStats, isL
             <div className="px-4 pt-2 pb-6 space-y-2">
               {!isAdmin && <NavItem page="/" label="Home" onClick={() => setIsMobileMenuOpen(false)} />}
               {!isAdmin && <NavItem page="/challenges" label="Challenges" icon={Target} onClick={() => setIsMobileMenuOpen(false)} />}
-              {!isAdmin && <NavItem page="/files" label="Files" icon={LayoutDashboard} onClick={() => setIsMobileMenuOpen(false)} />}
+              {!isAdmin && <NavItem page="/resources" label="Training" icon={BookOpen} onClick={() => setIsMobileMenuOpen(false)} />}
               {isAdmin && <NavItem page="/admin" label="Admin Panel" icon={Shield} onClick={() => setIsMobileMenuOpen(false)} danger />}
 
               {/* Mobile Auth Buttons */}

@@ -81,7 +81,7 @@ const HomePage: React.FC<HomeProps> = ({ onNavigate }) => {
                                 PRESENTED BY
                             </span>
                         </div>
-                        <span className="text-[10px] text-slate-600 font-mono">GU_SEC_01</span>
+                        <span className="text-[10px] text-yellow-400 font-mono font-bold tracking-wider">TX 2026</span>
                     </div>
 
                     {/* Logo Area with Scanner Effect */}
@@ -124,12 +124,12 @@ const HomePage: React.FC<HomeProps> = ({ onNavigate }) => {
           {/* Giant Hero Text */}
           <MotionH1 variants={itemVariants} className="text-6xl md:text-8xl font-black text-white mb-6 tracking-tighter leading-[0.85]">
             <span className="block text-stroke-sm text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-400 hover:text-cyan-400 transition-colors duration-300 cursor-default text-5xl md:text-7xl">
-              CAPTURE
+              MYSTIC
             </span>
             <span className="block relative">
               <span className="absolute -inset-2 blur-2xl bg-cyan-500/20 -z-10"></span>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 neon-text">
-                THE FLAG
+                FLAG FORGE
               </span>
             </span>
           </MotionH1>

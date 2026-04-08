@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react';
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
   return {
+    publicDir: 'public',
     server: {
       port: 3002,
       host: '0.0.0.0',
@@ -12,18 +13,13 @@ export default defineConfig(({ mode }) => {
       cors: {
         origin: '*'
       },
-      proxy: {
-        '/api': {
-          target: 'http://localhost:3001',
-          changeOrigin: true,
-          rewrite: (path: string) => path.replace(/^\/api/, ''),
-        },
-      },
       hmr: {
-        host: '0.0.0.0',
-        port: 3002,
+        protocol: 'ws',
         clientPort: 3002,
       },
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+      }
     },
     preview: {
       port: 3002,

@@ -34,7 +34,10 @@ export class Challenge {
     category: Category;
 
     @Column({ name: 'estimated_time', nullable: true })
-    estimatedTime: string;
+    estimatedTime: number; // in minutes
+
+    @Column({ name: 'hint_costs', type: 'simple-array', nullable: true })
+    hintCosts: number[]; // [5, 10, 15] for progressive costs
 
     @Column({ default: 300 })
     duration: number;

@@ -20,15 +20,15 @@ export class FirstBlood {
     @CreateDateColumn({ name: 'created_at' })
     createdAt: Date;
 
-    @ManyToOne(() => Challenge)
+    @ManyToOne(() => Challenge, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'challenge_id' })
     challenge: Challenge;
 
-    @ManyToOne(() => User)
+    @ManyToOne(() => User, { onDelete: 'CASCADE' })
     @JoinColumn({ name: 'user_id' })
     user: User;
 
-    @ManyToOne(() => Team, { nullable: true })
+    @ManyToOne(() => Team, { nullable: true, onDelete: 'SET NULL' })
     @JoinColumn({ name: 'team_id' })
     team: Team;
 }

@@ -7,7 +7,7 @@ import { Challenge } from '../types';
  */
 
 export const generateChallengeFile = (challengeId: string): { filename: string, content: string, mimeType: string } | null => {
-  
+
   switch (challengeId) {
     // ---------------------------------------------------------
     // WEB001: Hello World Error
@@ -35,7 +35,8 @@ export const generateChallengeFile = (challengeId: string): { filename: string, 
     
     <!-- 
        TODO: I feel like I'm forgetting something at the bottom of this file...
-       Anyway, here is the secret flag: flag{</html>} 
+       Anyway, here is the secret payload (HTML encoded):
+       &#102;&#108;&#97;&#103;&#123;&#60;&#47;&#104;&#116;&#109;&#108;&#62;&#125;
     -->
         `
       };
@@ -53,8 +54,8 @@ User-agent: *
 Disallow: /private/
 Disallow: /admin-panel/
 
-# The flag is hidden in the directory name below:
-# flag{disallow_admin_panel}
+# The secret token is hidden in the directory name below (URL Encoded):
+# /%66%6c%61%67%7b%64%69%73%61%6c%6c%6f%77%5f%61%64%6d%69%6e%5f%70%61%6e%65%6c%7d/
         `
       };
 
@@ -119,7 +120,7 @@ User-Agent: Mozilla/5.0
 Content-Type: application/x-www-form-urlencoded
 Content-Length: 42
 
-username=admin&password=flag{plaintext_credentials_bad}
+username=admin&auth_token=%66%6c%61%67%7b%70%6c%61%69%6e%74%65%78%74%5f%63%72%65%64%65%6e%74%69%61%6c%73%5f%62%61%64%7d
 
 10.0.0.1 > 192.168.1.5: HTTP 302 Redirect
 Location: /dashboard
@@ -148,7 +149,7 @@ MODEL: EOS 5D
 [EXIF METADATA BLOCK]
 0x0010: 45 78 69 66 00 00 4D 4D
 0x0020: 00 2A 00 00 00 08 00 02
-0x0030: UserComment: flag{always_strip_metadata}
+0x0030: UserComment: (Base64) ZmxhZ3thbHdheXNfc3RyaXBfbWV0YWRhdGF9
 0x0040: GPSLatitude: 37.7749 N
 0x0050: GPSLongitude: 122.4194 W
         `
@@ -164,7 +165,7 @@ MODEL: EOS 5D
       return {
         filename: 'program.bin',
         mimeType: 'application/octet-stream',
-        content: `ELF...${garbage}...@821...func_main...strcmp(input, "flag{strings_command_is_powerful}")...${garbage}...END`
+        content: `ELF...${garbage}...@821...func_main...strcmp(input, "\x66\x6c\x61\x67\x7b\x73\x74\x72\x69\x6e\x67\x73\x5f\x63\x6f\x6d\x6d\x61\x6e\x64\x5f\x69\x73\x5f\x70\x6f\x77\x65\x72\x66\x75\x6c\x7d")...${garbage}...END`
       };
 
     // ---------------------------------------------------------
@@ -186,7 +187,7 @@ endobj
 3 0 obj
 <<
 /Type /Page
-/Contents (Congratulation! You fixed the header. The flag is: flag{magic_bytes_restored})
+/Contents (Congratulation! You fixed the header. The payload is: %66%6c%61%67%7b%6d%61%67%69%63%5f%62%79%74%65%73%5f%72%65%73%74%6f%72%65%64%7d)
 >>
 endobj
 xref
@@ -214,7 +215,7 @@ trailer
 #include <string.h>
 
 void win() {
-    printf("Congratulations! flag{segfault_controlled}\\n");
+    printf("Congratulations! \\x66\\x6c\\x61\\x67\\x7b\\x73\\x65\\x67\\x66\\x61\\x75\\x6c\\x74\\x5f\\x63\\x6f\\x6e\\x74\\x72\\x6f\\x6c\\x6c\\x65\\x64\\x7d\\n");
 }
 
 void vulnerable_function() {
@@ -244,13 +245,38 @@ function checkTime() {
   const currentTime = Date.now();
   
   if (currentTime >= targetTime) {
-    console.log("Access Granted: flag{temporal_manipulation}");
+    console.log("Access Granted. Token: \\x66\\x6c\\x61\\x67\\x7b\\x74\\x65\\x6d\\x70\\x6f\\x72\\x61\\x6c\\x5f\\x6d\\x61\\x6e\\x69\\x70\\x75\\x6c\\x61\\x74\\x69\\x6f\\x6e\\x7d");
   } else {
     console.log("Access Denied: It is not time yet.");
   }
 }
 
 checkTime();
+        `
+      };
+
+    // ---------------------------------------------------------
+    // CRYPTO004: Ransomware Reversal
+    // ---------------------------------------------------------
+    case 'crypto004':
+      return {
+        filename: 'ransomware_evidence.txt',
+        mimeType: 'text/plain',
+        content: `
+--- FORENSIC EVIDENCE ---
+FILE: encrypt.py
+CONTENT:
+def encrypt(data, key):
+    return bytes([b ^ key for b in data])
+
+secret_data = open('flag.txt', 'r').read().encode()
+encrypted = encrypt(secret_data, 0x42)
+print("Encrypted data:", encrypted.hex())
+
+---
+FILE: database.enc (Hex Dump)
+CONTENT:
+242e2325393a72301d2f76362a1d73311d30713471303173202e713f
         `
       };
 

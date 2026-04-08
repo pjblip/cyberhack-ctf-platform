@@ -54,7 +54,7 @@ const WelcomeScreen: React.FC<WelcomeScreenProps> = ({ onClose }) => {
               {/* Header */}
               <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8 border-b-2 border-cyan-500/30">
                 <div className="absolute inset-0 bg-[linear-gradient(rgba(6,182,212,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(6,182,212,0.05)_1px,transparent_1px)] bg-[size:20px_20px]" />
-                
+
                 <div className="relative z-10 text-center">
                   <motion.div
                     initial={{ scale: 0 }}
